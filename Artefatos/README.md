@@ -78,3 +78,5 @@ Este diretório mantém os artefatos do projeto.
 * **memorial.md**: Memorial descritivo da graduação.
 
 * **Projeto-PreBanca_Atividade_A7.pdf**: Documento de projeto enviado para a pré-banca ao final do TCC I.
+  
+* **Projeto-Final_Atividade_A8.pdf**: Documento de projeto com as correções sugeridas na pré-banca ao final do TCC I.

@@ -1,31 +1,25 @@
 cff-version: 1.0.1
 message: Please cite this software using these metadata.
-title: 
+title: BFF Squared - um framework para construção de BFFs
 authors:
-  - family-names: 
-    given-names: 
-  - family-names: 
-    given-names: 
-  - family-names: 
-    given-names: 
-  - family-names: 
-    given-names: 
-  - family-names: 
-    given-names: 
-  - family-names: 
+  - family-names: Silva
+    given-names: Marlon Henrique
+  - name-suffix: Professor
+    affiliation: PUC Minas
+    family-names: Xavier
+    given-names: José Laerte
+  - name-suffix: Professor
+    affiliation: PUC Minas
+    family-names: Costa
+    given-names: Marco Rodrigo
+  - name-suffix: Professor
+    affiliation: PUC Minas
+    family-names:
     given-names:
-  - name-suffix: Professor
-    affiliation: PUC Minas
-    family-names: 
-    given-names: 
-  - name-suffix: Professor
-    affiliation: PUC Minas
-    family-names: 
-    given-names: 
 keywords:
-  - 
-  - 
-repository-code: 
+  - Back-end for Front-end
+  - GraphQL
+repository-code: https://github.com/ICEI-PUC-Minas-PPLES-TI/plf-es-2022-1-tcci-5308100-dev-marlon-silva
 license: CC-BY-4.0
 version: 1.0.0
-date-released: 2022-07-14
+date-released: 2022-06-10
