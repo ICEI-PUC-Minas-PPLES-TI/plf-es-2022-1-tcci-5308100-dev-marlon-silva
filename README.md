@@ -10,6 +10,7 @@ Automatizar a construção de aplicações _Back-end for Front-end_ (BFF) utiliz
 
 * José Laerte Xavier - Orientador Acadêmico (TCC I)
 * Marco Rodrigo Costa - Orientador de Conteúdo (TCC I)
+* José Laerte Xavier - Professor-Orientador (TCC II)
 
 ## Instruções de utilização
 
