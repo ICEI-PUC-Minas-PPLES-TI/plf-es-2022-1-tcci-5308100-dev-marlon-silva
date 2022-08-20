@@ -3,7 +3,10 @@ name: Manager
 on: [push, pull_request]
 
 jobs:
-  test:
+  manager-tests:
+    defaults:
+      run:
+        working-directory: Codigo/bff-squared
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
