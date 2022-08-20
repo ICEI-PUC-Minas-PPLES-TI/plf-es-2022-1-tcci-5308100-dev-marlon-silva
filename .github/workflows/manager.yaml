@@ -21,6 +21,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Prepare Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
       - name: Prepare Node.js
         uses: actions/setup-node@v3
         with:
