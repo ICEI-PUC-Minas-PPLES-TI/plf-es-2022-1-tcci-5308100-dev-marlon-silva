@@ -1,0 +1,29 @@
+name: API
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Prepare Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '8'
+
+      - name: Install Clojure tools
+        uses: DeLaGuardo/setup-clojure@9.4
+        with:
+          lein: 2.9.1
+        
+      - name: Run tests
+        run: lein test
