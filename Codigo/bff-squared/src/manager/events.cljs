@@ -1,19 +1,18 @@
 (ns manager.events
   (:require [re-frame.core :as re-frame]
-            [manager.db :as db]
-            [day8.re-frame.tracing :refer-macros [fn-traced]]))
+            [manager.db :as db]))
 
 (re-frame/reg-event-db
  ::initialize-db
- (fn-traced [_ _]
+ (fn [_ _]
             db/default-db))
 
 (re-frame/reg-event-fx
  ::navigate
- (fn-traced [_ [_ handler]]
+ (fn [_ [_ handler]]
             {:navigate handler}))
 
 (re-frame/reg-event-fx
  ::set-active-panel
- (fn-traced [{:keys [db]} [_ active-panel]]
+ (fn [{:keys [db]} [_ active-panel]]
             {:db (assoc db :active-panel active-panel)}))
