@@ -14,8 +14,8 @@ authors:
     given-names: Marco Rodrigo
   - name-suffix: Professor
     affiliation: PUC Minas
-    family-names:
-    given-names:
+    family-names: Xavier
+    given-names: José Laerte
 keywords:
   - Back-end for Front-end
   - GraphQL
