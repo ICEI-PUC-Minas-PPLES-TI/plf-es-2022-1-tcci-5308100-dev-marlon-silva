@@ -1,28 +1,24 @@
-;; This example is based off of the code generated from the template
-;;  `lein new pedestal-service graphql-demo`
-
 (ns api.server
-  (:gen-class) ; for -main method in uberjar
+  (:gen-class)
   (:require [io.pedestal.http :as http]
             [com.walmartlabs.lacinia.pedestal2 :as lp]
-            [com.walmartlabs.lacinia.schema :as schema]))
+            [com.walmartlabs.lacinia.schema :as schema]
+            [com.walmartlabs.lacinia.util :as util]
+            [clojure.edn :as edn]))
+
+(defn load-definition [] (edn/read-string (slurp "./resources/definition.edn")))
+
+(defn resolvers-map [definition]
+  (-> (reduce #(assoc %1 %2 (fn [_ _ _] (name %2))) {} (map (comp :resolve second) (:queries definition)))
+      (assoc :greeting-t-resolve (fn [_ _ _] ["c" "a" "b"]))
+      (assoc :greeting-resolve (fn [_ _ _] {:id "4" :name "Des" :kind "JEDI" :url "http" :games ["aaa" "bbb"]}))))
 
 (def hello-schema
-  (schema/compile
-   {:queries
-    {:hello
-        ;; String is quoted here; in EDN the quotation is not required 
-        ;; You could also use :String
-     {:type :String
-      :description "Say helloooou"
-      :resolve (constantly "world")}
-     
-     :bye
-     {:type :String
-      :description "Say goodbyeee"
-      :resolve (constantly "see you")}}}))
+  (let [definition (:graphql (load-definition))]
+    (-> definition
+        (util/attach-resolvers (resolvers-map definition))
+        (schema/compile))))
 
-;; Use default options:
 (def service (lp/default-service hello-schema nil))
 
 ;; This is an adapted service map, that can be started and stopped.
@@ -32,5 +28,5 @@
 (defn -main
   "The entry-point for 'lein run'"
   [& args]
-  (println "\nCreating your server...")
+  (println "\nCreating server...")
   (http/start runnable-service))

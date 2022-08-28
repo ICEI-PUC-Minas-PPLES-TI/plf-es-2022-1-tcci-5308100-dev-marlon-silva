@@ -5,8 +5,7 @@
   {:Kinder
    {:description "The episodes of the original Star Wars trilogy.",
     :values
-    [{:enum-value :NEWHOPE,
-      :description "The first one you saw."}
+    [{:enum-value :NEWHOPE, :description "The first one you saw."}
      {:enum-value :EMPIRE,
       :description "The good one.",
       :deprecated "no more"}
@@ -17,15 +16,9 @@
    {:fields
     {:id {:type (non-null :ID)},
      :name {:type (non-null :String)},
-     :url
-     {:type :String,
-      :description "Home page URL, if known."},
-     :kind
-     {:type (non-null :Kinder)
-      :description "kind of person"},
-     :num
-     {:type :String
-      :description "kind of number"},
+     :url {:type :String, :description "Home page URL, if known."},
+     :kind {:type (non-null :Kinder), :description "kind of person"},
+     :num {:type :String, :description "kind of number"},
      :games
      {:type (non-null (list (non-null :String))),
       :description "Games designed by this designer.",
