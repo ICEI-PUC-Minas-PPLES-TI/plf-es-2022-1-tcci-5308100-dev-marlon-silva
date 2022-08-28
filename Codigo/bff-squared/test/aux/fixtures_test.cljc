@@ -1,6 +1,6 @@
-(ns aux.mock)
+(ns aux.fixtures-test)
 
-(def definition
+(def definition-map
   '{:graphql
     {:interfaces
      {:Human {:description "Person", :fields {:name {:type :String}}}
