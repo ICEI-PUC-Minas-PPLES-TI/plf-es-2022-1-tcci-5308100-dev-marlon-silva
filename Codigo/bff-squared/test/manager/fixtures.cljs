@@ -1,4 +1,4 @@
-(ns aux.fixtures-test)
+(ns manager.fixtures)
 
 (def definition-map
   '{:graphql

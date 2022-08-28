@@ -1,7 +1,7 @@
 (ns manager.storage-test
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [manager.storage :as s]
-            [aux.fixtures-test :as fixtures]))
+            [manager.fixtures :as fixtures]
+            [manager.storage :as s]))
 
 (deftest assoc-definition-test
   (testing "With same old name"
