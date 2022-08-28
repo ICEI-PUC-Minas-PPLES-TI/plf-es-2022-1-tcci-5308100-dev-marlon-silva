@@ -11,37 +11,40 @@
 
 (def definition-path "./resources/definition.edn")
 
-(defn load-callback [err data]
+(defn- load-callback [err data]
   (if err
     (throw (js/Error. "Error on load definition file."))
     (reset! definition (reader/read-string data))))
 
-(defn save-callback [err _]
+(defn- save-callback [err _]
   (when err
     (throw (js/Error. "Error on save definition file."))))
 
-(defn load-definition []
+(defn- load-definition []
   (.readFile fs definition-path "utf8" load-callback))
 
-(defn save-definition []
+(defn- save-definition []
   (.writeFile fs definition-path (with-out-str (pp/pprint @definition)) "utf8" save-callback))
 
-(def keyword-values #{:env :method :resolve})
-
 (defn keywordize-vals [m]
-  (w/walk (fn [[k v]]
-            [k (cond
-                 (= k :implements) (mapv keyword v)
-                 (contains? keyword-values k) (keyword v)
-                 :else v)]) identity m))
+  (w/postwalk (fn [x]
+                (if (map? x)
+                  (cond-> x
+                    (:implements x) (update :implements (partial mapv keyword))
+                    (:env x) (update :env keyword)
+                    (:method x) (update :method keyword)
+                    (:resolve x) (update :resolve keyword))
+                  x)) m))
 
 (defn vector->compound-functions [v]
   (let [v (if-not (vector? v) [v] v)]
     (reduce #(list %2 %1) (keyword (last v)) (mapv symbol (butlast v)))))
 
 (defn format-types [m]
-  (w/walk (fn [[k v]]
-            [k (if (= k :type) (vector->compound-functions v) v)]) identity m))
+  (w/postwalk (fn [x]
+                (if (and (map? x) (:type x))
+                  (update x :type vector->compound-functions)
+                  x)) m))
 
 (defn ->edn [data]
   (-> data keywordize-vals format-types))
@@ -55,7 +58,7 @@
 (defn used-resource? [m v]
   (->> (tree-seq map? vals m)
        (filter map?)
-       (some #(contains? (set (vals %)) v))))
+       (some #(contains? (set (flatten (vals %))) v))))
 
 (defn assoc-definition
   [current-definition path {:keys [old-name name data]}]
@@ -77,40 +80,42 @@
     (update-in current-definition path dissoc name)
     (throw (js/Error. "This resource is still used by others."))))
 
-(defn write-handler [req res]
+(defn- write-handler [req res]
   (let [body (js->clj (.-body req) :keywordize-keys true)
         path (mapv keyword (:path body))]
     (try
       (reset! definition (assoc-definition @definition path body))
       (save-definition)
-      (-> res (.status 200) (.json (clj->js {:message "Definition updated."})))
+      (-> res (.status 200) (.json #js{:message "Definition updated."}))
       (catch js/Error e
-        (-> res (.status 500) (.json (clj->js {:message (.-message e)})))))))
+        (-> res (.status 500) (.json #js{:message (.-message e)}))))))
 
-(defn delete-handler [req res]
+(defn- delete-handler [req res]
   (let [body (js->clj (.-body req) :keywordize-keys true)
         path (mapv keyword (:path body))]
     (try
       (reset! definition (dissoc-definition @definition path (keyword (:name body))))
       (save-definition)
-      (-> res (.status 200) (.json (clj->js {:message "Definition updated."})))
+      (-> res (.status 200) (.json #js{:message "Definition updated."}))
       (catch js/Error e
-        (-> res (.status 500) (.json (clj->js {:message (.-message e)})))))))
+        (-> res (.status 500) (.json #js{:message (.-message e)}))))))
 
-(defn read-handler [req res]
+(defn- read-handler [req res]
   (let  [body (js->clj (.-body req) :keywordize-keys true)
-         path (mapv keyword (:path body []))]
-    (.send res (clj->js (get-in @definition path)))))
+         path (mapv keyword (:path body []))] 
+    (-> res (.status 200) (.json (clj->js (get-in @definition path))))))
+
+(def app
+  (doto (express)
+    (.use (.json express))
+    (.get "/storage" read-handler)
+    (.put "/storage" write-handler)
+    (.delete "/storage" delete-handler)))
 
 (defn start-server []
   (println "Loading definition...")
   (load-definition)
-  (let [app (express)]
-    (.use app (.json express))
-    (.get app "/storage" read-handler)
-    (.put app "/storage" write-handler)
-    (.delete app "/storage" delete-handler)
-    (.listen app 8180 #(println "Storage running on port 8180..."))))
+  (.listen app 8180 #(println "Storage running on port 8180...")))
 
 (defn start! []
   ;; called by main and after reloading code
