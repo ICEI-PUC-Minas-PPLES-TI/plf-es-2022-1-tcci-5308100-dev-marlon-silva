@@ -1,10 +1,10 @@
 name: Manager
 
 on:
-  push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
+    paths:
+      - Codigo/*
 
 jobs:
   tests:
