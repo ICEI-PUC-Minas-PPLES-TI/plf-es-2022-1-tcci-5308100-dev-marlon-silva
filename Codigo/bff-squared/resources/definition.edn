@@ -1,0 +1,49 @@
+{:graphql
+ {:interfaces
+  {:Human {:description "Person", :fields {:name {:type :String}}}},
+  :enums
+  {:Kinder
+   {:description "The episodes of the original Star Wars trilogy.",
+    :values
+    [{:enum-value :NEWHOPE, :description "The first one you saw."}
+     {:enum-value :EMPIRE,
+      :description "The good one.",
+      :deprecated "no more"}
+     {:enum-value :JEDI,
+      :description "The one with the killer teddy bears."}]}},
+  :objects
+  {:Designer
+   {:fields
+    {:id {:type (non-null :ID)},
+     :name {:type (non-null :String)},
+     :url {:type :String, :description "Home page URL, if known."},
+     :kind {:type (non-null :Kinder), :description "kind of person"},
+     :num {:type :String, :description "kind of number"},
+     :games
+     {:type (non-null (list (non-null :String))),
+      :description "Games designed by this designer.",
+      :deprecated "testing"}},
+    :description
+    "A person who may have contributed to a board game design.",
+    :implements [:Human]}},
+  :queries
+  {:hello
+   {:type :String,
+    :description "Say helloooou",
+    :resolve :hello-resolve},
+   :bye
+   {:type :String,
+    :description "Say goodbyeee",
+    :resolve :bye-resolve},
+   :greeting
+   {:type :Designer,
+    :description "How are you?",
+    :resolve :greeting-resolve},
+   :greetingType
+   {:type (list (non-null :String)),
+    :description "How are you?",
+    :resolve :greeting-t-resolve}}},
+ :config
+ {:name "bff-squared",
+  :description "Um framework para construção de BFFs"},
+ :sources {:github {:uri "https://github.com", :method :get}}}
