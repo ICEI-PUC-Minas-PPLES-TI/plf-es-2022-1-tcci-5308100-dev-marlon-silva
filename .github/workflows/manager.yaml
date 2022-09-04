@@ -4,7 +4,8 @@ on:
   pull_request:
     branches: [ master ]
     paths:
-      - Codigo/*
+      - Codigo/**/*
+      - .github/workflows/manager.yaml
 
 jobs:
   tests:
