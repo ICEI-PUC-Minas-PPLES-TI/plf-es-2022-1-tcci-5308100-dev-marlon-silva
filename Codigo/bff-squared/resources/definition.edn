@@ -1,49 +1,115 @@
-{:graphql
- {:interfaces
-  {:Human {:description "Person", :fields {:name {:type :String}}}},
-  :enums
-  {:Kinder
-   {:description "The episodes of the original Star Wars trilogy.",
-    :values
-    [{:enum-value :NEWHOPE, :description "The first one you saw."}
-     {:enum-value :EMPIRE,
-      :description "The good one.",
-      :deprecated "no more"}
-     {:enum-value :JEDI,
-      :description "The one with the killer teddy bears."}]}},
-  :objects
-  {:Designer
+{:graphql 
+ {:objects
+  {:OneAdviceResponse
    {:fields
-    {:id {:type (non-null :ID)},
-     :name {:type (non-null :String)},
-     :url {:type :String, :description "Home page URL, if known."},
-     :kind {:type (non-null :Kinder), :description "kind of person"},
-     :num {:type :String, :description "kind of number"},
-     :games
-     {:type (non-null (list (non-null :String))),
-      :description "Games designed by this designer.",
-      :deprecated "testing"}},
-    :description
-    "A person who may have contributed to a board game design.",
-    :implements [:Human]}},
+    {:status {:type :Int}
+     :body {:type :AdviceBody}}}
+   :AdviceBody
+   {:fields
+    {:slip {:type :AdviceSlip}
+     :message {:type :AdviceMessage}}}
+   :AdviceMessage
+   {:fields
+    {:type {:type :String}
+     :text {:type :String}}}
+   :AdviceSlip
+   {:description "Advice Slip"
+    :fields
+    {:id {:type (non-null :Int)}
+     :advice {:type (non-null :String)}}}
+   :AdvicesResponse
+   {:fields
+    {:status {:type :Int}
+     :body {:type :AdvicesBody}}}
+   :AdvicesBody
+   {:fields
+    {:total_results {:type :String}
+     :query {:type :String}
+     :slips {:type (list :AdviceSlipeWithDate)}
+     :message {:type :AdviceMessage}}}
+   :AdviceSlipeWithDate
+   {:fields
+    {:id {:type (non-null :Int)}
+     :advice {:type (non-null :String)}
+     :date {:type (non-null :String)}}}
+   :ReposResponse
+   {:fields
+    {:status {:type :Int}
+     :body {:type (list :Repo)}
+     :headers {:type :ReposResponseHeaders}
+     :links {:type :Pagination}}}
+   :ReposResponseHeaders
+   {:fields
+    {:date {:type :String}
+     :etag {:type :String}}}
+   :Pagination
+   {:fields
+    {:prev {:type :Link}
+     :next {:type :Link}}}
+   :Link
+   {:fields
+    {:href {:type :String}}}
+   :Repo
+   {:fields
+    {:id {:type :Int}
+     :name {:type :String}
+     :url {:type :String}
+     :description {:type :String}}}}
+  
+  :input-objects
+  {:GetAdviceParams
+   {:fields
+    {:adviceId {:type (non-null :ID)}}}
+   :SearchAdviceParams
+   {:fields
+    {:query {:type :String}}}
+   :UserReposParams
+   {:fields 
+    {:userId {:type (non-null :String)}
+     :page {:type :Int}
+     :per_page {:type :Int}}}
+   :UserReposHeaders
+   {:fields
+    {:Authorization {:type :String}}}}
+
   :queries
-  {:hello
-   {:type :String,
-    :description "Say helloooou",
-    :resolve :hello-resolve},
-   :bye
-   {:type :String,
-    :description "Say goodbyeee",
-    :resolve :bye-resolve},
-   :greeting
-   {:type :Designer,
-    :description "How are you?",
-    :resolve :greeting-resolve},
-   :greetingType
-   {:type (list (non-null :String)),
-    :description "How are you?",
-    :resolve :greeting-t-resolve}}},
+  {:adviceById
+   {:type :OneAdviceResponse
+    :description "Get an advice slip by ID"
+    :resolve :GetAdviceSlipById
+    :args 
+    {:params {:type :GetAdviceParams}}}
+   :randomAdvice
+   {:type :OneAdviceResponse
+    :description "Get a random advice slip"
+    :resolve :GetRandomAdvice}
+   :searchAdvice
+   {:type :AdvicesResponse
+    :description "Search advices by text"
+    :resolve :SearchAdvices
+    :args
+    {:params {:type :SearchAdviceParams}}}
+   :getUserRepos
+   {:type :ReposResponse
+    :resolve :GitHubRepos
+    :args 
+    {:params {:type :UserReposParams}
+     :headers {:type :UserReposHeaders}}}}}
+ 
  :config
  {:name "bff-squared",
-  :description "Um framework para construção de BFFs"},
- :sources {:github {:uri "https://github.com", :method :get}}}
+  :description "Um framework para construção de BFFs"}
+ 
+ :sources
+ {:GetAdviceSlipById
+  {:method :get,
+   :uri "https://api.adviceslip.com/advice/:adviceId"}
+  :GetRandomAdvice
+  {:method :get,
+   :uri "https://api.adviceslip.com/advice"}
+  :SearchAdvices
+  {:method :get,
+   :uri "https://api.adviceslip.com/advice/search/:query"}
+  :GitHubRepos
+  {:method :get
+   :uri "https://api.github.com/users/:userId/repos"}}}
