@@ -13,7 +13,7 @@
                                 :data {:description "Example"
                                        :fields {:age {:type "Int"}}}}))))
 
-  (testing "With differente old name"
+  (testing "With different old name and available name"
     (is (= (-> fixtures/definition-map
                (update-in [:graphql :interfaces] dissoc :Human)
                (assoc-in [:graphql :objects :Designer :fields :team :type] '(list (non-null :New)))
@@ -25,6 +25,16 @@
                                 :old-name "Human"
                                 :data {:description "Example"
                                        :fields {:age {:type "Int"}}}}))))
+
+  (testing "With different old name and unavailable name"
+    (is (thrown-with-msg? js/Error
+                          #"This name already exists."
+                          (s/assoc-definition fixtures/definition-map
+                                              [:graphql :interfaces]
+                                              {:name "Designer"
+                                               :old-name "Human"
+                                               :data {:description "Example"
+                                                      :fields {:age {:type "Int"}}}}))))
 
   (testing "Without old name and available name"
     (is (= (assoc-in fixtures/definition-map [:graphql :interfaces :New] {:description "Example" :fields {:age {:type :Int}}})

@@ -23,39 +23,31 @@
 (defn- load-definition []
   (.readFile fs definition-path "utf8" load-callback))
 
-(defn- save-definition []
+(defn- save-definition! []
   (.writeFile fs definition-path (with-out-str (pp/pprint @definition)) "utf8" save-callback))
 
-(defn keywordize-vals [m]
-  (w/postwalk (fn [x]
-                (if (map? x)
-                  (cond-> x
-                    (:implements x) (update :implements (partial mapv keyword))
-                    (:env x) (update :env keyword)
-                    (:method x) (update :method keyword)
-                    (:resolve x) (update :resolve keyword))
-                  x)) m))
+(defn format-type [type]
+  (let [type (if (vector? type) type [type])]
+    (reduce #(list %2 %1) (keyword (last type)) (mapv symbol (butlast type)))))
 
-(defn vector->compound-functions [v]
-  (let [v (if-not (vector? v) [v] v)]
-    (reduce #(list %2 %1) (keyword (last v)) (mapv symbol (butlast v)))))
-
-(defn format-types [m]
-  (w/postwalk (fn [x]
-                (if (and (map? x) (:type x))
-                  (update x :type vector->compound-functions)
-                  x)) m))
+(defn maybe-format-values [m]
+  (cond-> m
+    ((comp #(or (string? %) (vector? %)) :type) m) (update :type format-type)
+    ((comp vector? :implements) m) (update :implements (partial mapv keyword))
+    ((comp string? :env) m) (update :env keyword)
+    ((comp string? :method) m) (update :method keyword)
+    ((comp string? :resolve) m) (update :resolve keyword)))
 
 (defn ->edn [data]
-  (-> data keywordize-vals format-types))
+  (w/postwalk #(if (map? %) (maybe-format-values %) %) data))
 
-(defn available-name? [m k]
+(defn available? [m k]
   (->> (tree-seq map? vals m)
        (filter map?)
        (some k)
        (nil?)))
 
-(defn used-resource? [m v]
+(defn referenced? [m v]
   (->> (tree-seq map? vals m)
        (filter map?)
        (some #(contains? (set (flatten (vals %))) v))))
@@ -64,45 +56,50 @@
   [current-definition path {:keys [old-name name data]}]
   (let [data (->edn data)
         old-name (keyword old-name)
-        name (keyword name)]
-    (if (or (= old-name name)
-            (available-name? current-definition name))
-      (if (or (nil? old-name)
-              (= old-name name))
-        (assoc-in current-definition (conj path name) data)
-        (-> (w/postwalk-replace {old-name name} current-definition)
-            (assoc-in (conj path name) data)))
-      (throw (js/Error. "This name already exists.")))))
+        name (keyword name)
+        available-name? (delay (available? current-definition name))]
+    (cond
+      (or (= old-name name) (and (nil? old-name) @available-name?))
+      (assoc-in current-definition (conj path name) data)
+
+      @available-name?
+      (-> (w/postwalk-replace {old-name name} current-definition)
+          (assoc-in (conj path name) data))
+
+      :else (throw (js/Error. "This name already exists.")))))
 
 (defn dissoc-definition
   [current-definition path name]
-  (if-not (used-resource? current-definition name)
+  (if-not (referenced? current-definition name)
     (update-in current-definition path dissoc name)
     (throw (js/Error. "This resource is still used by others."))))
+
+(defn- update-definition! [new-definition]
+  (reset! definition new-definition)
+  (save-definition!))
 
 (defn- write-handler [req res]
   (let [body (js->clj (.-body req) :keywordize-keys true)
         path (mapv keyword (:path body))]
     (try
-      (reset! definition (assoc-definition @definition path body))
-      (save-definition)
+      (update-definition! (assoc-definition @definition path body))
       (-> res (.status 200) (.json #js{:message "Definition updated."}))
       (catch js/Error e
         (-> res (.status 500) (.json #js{:message (.-message e)}))))))
 
 (defn- delete-handler [req res]
   (let [body (js->clj (.-body req) :keywordize-keys true)
-        path (mapv keyword (:path body))]
+        path (mapv keyword (:path body))
+        name (keyword (:name body))]
     (try
-      (reset! definition (dissoc-definition @definition path (keyword (:name body))))
-      (save-definition)
+      (update-definition! (dissoc-definition @definition path name))
       (-> res (.status 200) (.json #js{:message "Definition updated."}))
       (catch js/Error e
         (-> res (.status 500) (.json #js{:message (.-message e)}))))))
 
 (defn- read-handler [req res]
   (let  [body (js->clj (.-body req) :keywordize-keys true)
-         path (mapv keyword (:path body []))] 
+         path (mapv keyword (:path body []))]
     (-> res (.status 200) (.json (clj->js (get-in @definition path))))))
 
 (def app
