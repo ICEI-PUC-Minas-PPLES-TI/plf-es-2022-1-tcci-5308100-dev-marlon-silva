@@ -27,6 +27,6 @@
     {:name "bff-squared",
      :description "Um framework para construção de BFFs"},
     :sources
-    {:GetAdviceSlipById {:uri "https://api.adviceslip.com/advice/:adviceId",
-                         :method :get
-                         :into-response [:slip]}}})
+    {:GetAdviceSlipById
+     {:uri "https://api.adviceslip.com/advice/:adviceId",
+      :method :get}}})

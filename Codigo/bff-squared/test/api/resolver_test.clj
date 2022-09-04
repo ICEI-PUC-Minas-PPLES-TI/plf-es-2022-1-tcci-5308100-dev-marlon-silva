@@ -7,12 +7,12 @@
 (deftest get-source!-test
   (testing "Undefined source"
     (is (thrown-with-msg? clojure.lang.ExceptionInfo
-                          #"Source not defined or incomplete."
+                          #"Source 'IMDb' not defined or incomplete."
                           (r/get-source! {:GitHub {:method :get :uri "https://github.com"}} :IMDb))))
 
   (testing "Incomplete source"
     (is (thrown-with-msg? clojure.lang.ExceptionInfo
-                          #"Source not defined or incomplete."
+                          #"Source 'GitHub' not defined or incomplete."
                           (r/get-source! {:GitHub {:method :get}} :GitHub))))
 
   (testing "Existing and complete source"
@@ -31,7 +31,7 @@
 (deftest definition->resolvers-test
   (testing "Missing source"
     (is (thrown-with-msg? clojure.lang.ExceptionInfo
-                          #"Source not defined or incomplete."
+                          #"Source 'GetRandomAdvice' not defined or incomplete."
                           (r/definition->resolvers fixtures/definition-map (fn [source args] [source args])))))
 
   (testing "Returns a resolvers map"
