@@ -1,4 +1,4 @@
-{:graphql 
+{:graphql
  {:objects
   {:OneAdviceResponse
    {:fields
@@ -32,12 +32,17 @@
     {:id {:type (non-null :Int)}
      :advice {:type (non-null :String)}
      :date {:type (non-null :String)}}}
-   :ReposResponse
+   :ReposResponseSuccess
    {:fields
     {:status {:type :Int}
      :body {:type (list :Repo)}
      :headers {:type :ReposResponseHeaders}
      :links {:type :Pagination}}}
+   :ReposResponseError
+   {:fields
+    {:status {:type :Int}
+     :body {:type :ReposResponseBodyError}
+     :headers {:type :ReposResponseHeaders}}}
    :ReposResponseHeaders
    {:fields
     {:date {:type :String}
@@ -54,8 +59,17 @@
     {:id {:type :Int}
      :name {:type :String}
      :url {:type :String}
-     :description {:type :String}}}}
-  
+     :description {:type :String}}}
+   :ReposResponseBodyError
+   {:fields
+    {:message {:type :String}
+     :documentation_url {:type :String}}}}
+
+  :unions
+  {:ReposResponse
+   {:description "Success or Error"
+    :members [:ReposResponseSuccess :ReposResponseError]}}
+
   :input-objects
   {:GetAdviceParams
    {:fields
@@ -64,7 +78,7 @@
    {:fields
     {:query {:type :String}}}
    :UserReposParams
-   {:fields 
+   {:fields
     {:userId {:type (non-null :String)}
      :page {:type :Int}
      :per_page {:type :Int}}}
@@ -77,7 +91,7 @@
    {:type :OneAdviceResponse
     :description "Get an advice slip by ID"
     :resolve :GetAdviceSlipById
-    :args 
+    :args
     {:params {:type :GetAdviceParams}}}
    :randomAdvice
    {:type :OneAdviceResponse
@@ -90,16 +104,16 @@
     :args
     {:params {:type :SearchAdviceParams}}}
    :getUserRepos
-   {:type :ReposResponse
+   {:type :ReposResponseSuccess
     :resolve :GitHubRepos
-    :args 
+    :args
     {:params {:type :UserReposParams}
      :headers {:type :UserReposHeaders}}}}}
- 
+
  :config
  {:name "bff-squared",
   :description "Um framework para construção de BFFs"}
- 
+
  :sources
  {:GetAdviceSlipById
   {:method :get,

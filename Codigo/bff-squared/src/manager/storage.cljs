@@ -34,6 +34,7 @@
   (cond-> m
     ((comp #(or (string? %) (vector? %)) :type) m) (update :type format-type)
     ((comp vector? :implements) m) (update :implements (partial mapv keyword))
+    ((comp vector? :members) m) (update :members (partial mapv keyword))
     ((comp string? :env) m) (update :env keyword)
     ((comp string? :method) m) (update :method keyword)
     ((comp string? :resolve) m) (update :resolve keyword)))
