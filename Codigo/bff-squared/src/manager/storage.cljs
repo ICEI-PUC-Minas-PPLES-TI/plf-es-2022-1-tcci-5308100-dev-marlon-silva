@@ -1,8 +1,10 @@
 (ns manager.storage
   (:require ["express" :as express]
+            ["cors" :as cors]
             [cljs.reader :as reader]
             [clojure.pprint :as pp]
-            [clojure.walk :as w]))
+            [clojure.walk :as w]
+            [manager.utils :as u]))
 
 (def fs (js/require "fs"))
 
@@ -26,39 +28,12 @@
 (defn- save-definition! []
   (.writeFile fs definition-path (with-out-str (pp/pprint @definition)) "utf8" save-callback))
 
-(defn format-type [type]
-  (let [type (if (vector? type) type [type])]
-    (reduce #(list %2 %1) (keyword (last type)) (mapv symbol (butlast type)))))
-
-(defn maybe-format-values [m]
-  (cond-> m
-    ((comp #(or (string? %) (vector? %)) :type) m) (update :type format-type)
-    ((comp vector? :implements) m) (update :implements (partial mapv keyword))
-    ((comp vector? :members) m) (update :members (partial mapv keyword))
-    ((comp string? :env) m) (update :env keyword)
-    ((comp string? :method) m) (update :method keyword)
-    ((comp string? :resolve) m) (update :resolve keyword)))
-
-(defn ->edn [data]
-  (w/postwalk #(if (map? %) (maybe-format-values %) %) data))
-
-(defn available? [m k]
-  (->> (tree-seq map? vals m)
-       (filter map?)
-       (some k)
-       (nil?)))
-
-(defn referenced? [m v]
-  (->> (tree-seq map? vals m)
-       (filter map?)
-       (some #(contains? (set (flatten (vals %))) v))))
-
 (defn assoc-definition
   [current-definition path {:keys [old-name name data]}]
-  (let [data (->edn data)
+  (let [data (u/->edn data)
         old-name (keyword old-name)
         name (keyword name)
-        available-name? (delay (available? current-definition name))]
+        available-name? (delay (u/available? current-definition name))]
     (cond
       (or (= old-name name) (and (nil? old-name) @available-name?))
       (assoc-in current-definition (conj path name) data)
@@ -71,7 +46,7 @@
 
 (defn dissoc-definition
   [current-definition path name]
-  (if-not (referenced? current-definition name)
+  (if-not (u/referenced? current-definition name)
     (update-in current-definition path dissoc name)
     (throw (js/Error. "This resource is still used by others."))))
 
@@ -86,7 +61,7 @@
       (update-definition! (assoc-definition @definition path body))
       (-> res (.status 200) (.json #js{:message "Definition updated."}))
       (catch js/Error e
-        (-> res (.status 500) (.json #js{:message (.-message e)}))))))
+        (-> res (.status 400) (.json #js{:message (.-message e)}))))))
 
 (defn- delete-handler [req res]
   (let [body (js->clj (.-body req) :keywordize-keys true)
@@ -96,7 +71,7 @@
       (update-definition! (dissoc-definition @definition path name))
       (-> res (.status 200) (.json #js{:message "Definition updated."}))
       (catch js/Error e
-        (-> res (.status 500) (.json #js{:message (.-message e)}))))))
+        (-> res (.status 400) (.json #js{:message (.-message e)}))))))
 
 (defn- read-handler [req res]
   (let  [body (js->clj (.-body req) :keywordize-keys true)
@@ -106,9 +81,10 @@
 (def app
   (doto (express)
     (.use (.json express))
-    (.get "/storage" read-handler)
-    (.put "/storage" write-handler)
-    (.delete "/storage" delete-handler)))
+    (.use (cors))
+    (.post "/read" read-handler)
+    (.post "/write" write-handler)
+    (.post "/delete" delete-handler)))
 
 (defn start-server []
   (println "Loading definition...")

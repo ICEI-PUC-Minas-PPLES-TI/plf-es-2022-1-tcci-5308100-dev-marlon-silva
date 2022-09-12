@@ -1,27 +1,25 @@
 (ns manager.views
-  (:require [re-frame.core :as re-frame]
-            [re-com.core :as re-com :refer [at]]
-            [manager.events :as events]
-            [manager.routes :as routes]
-            [manager.subs :as subs]))
+  (:require [re-frame.core :as rf]
+            [re-com.core :as rc :refer [at]] 
+            [manager.routes :as routes]))
 
 ;; home
 
 (defn home-title []
-  (let [name (re-frame/subscribe [::subs/name])]
-    [re-com/title
+  (let [name "BFF Squared"]
+    [rc/title
      :src   (at)
-     :label (str "Hello from " @name ". This is the Home Page.")
+     :label (str "Hello from " name ". This is the Home Page.")
      :level :level1]))
 
 (defn link-to-about-page []
-  [re-com/hyperlink
+  [rc/hyperlink
    :src      (at)
    :label    "go to About Page"
-   :on-click #(re-frame/dispatch [::events/navigate :about])])
+   :on-click #(rf/dispatch [:redirect :about])])
 
 (defn home-panel []
-  [re-com/v-box
+  [rc/v-box
    :src      (at)
    :gap      "1em"
    :children [[home-title]
@@ -33,19 +31,19 @@
 ;; about
 
 (defn about-title []
-  [re-com/title
+  [rc/title
    :src   (at)
    :label "This is the About Page."
    :level :level1])
 
 (defn link-to-home-page []
-  [re-com/hyperlink
+  [rc/hyperlink
    :src      (at)
    :label    "go to Home Page"
-   :on-click #(re-frame/dispatch [::events/navigate :home])])
+   :on-click #(rf/dispatch [:redirect :home])])
 
-(defn about-panel []
-  [re-com/v-box
+(defn about-panel [] 
+  [rc/v-box
    :src      (at)
    :gap      "1em"
    :children [[about-title]
@@ -56,8 +54,9 @@
 ;; main
 
 (defn main-panel []
-  (let [active-panel (re-frame/subscribe [::subs/active-panel])]
-    [re-com/v-box
+  (let [active-panel (rf/subscribe [:get-active-panel])
+        _ (rf/dispatch [:get-resource-list [:graphql :queries]])]
+    [rc/v-box
      :src      (at)
      :height   "100%"
      :children [(routes/panels @active-panel)]]))
