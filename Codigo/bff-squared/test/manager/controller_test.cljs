@@ -1,7 +1,8 @@
 (ns manager.controller-test
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [clojure.set]
-            [manager.handlers :as h]))
+            [manager.handlers :as h]
+            [manager.fixtures :as fixtures]
+            [clojure.set]))
 
 (deftest update-resource-test
   (testing "Rename field"
@@ -90,6 +91,41 @@
             [nil :fields])))))
 
 (deftest new-resource-test
-  (testing "Blank resource"
+  (testing "New blank resource"
     (is (= {:resource {:old-name nil}}
            (h/new-resource {} [])))))
+
+(deftest load-resource-success-test
+  (testing "Load a resource by name"
+    (is (= {:resource {:old-name "Item"
+                       :name "Item"
+                       :data {:description "No info"
+                              :type #{"list" "String" "non-null"}}}}
+           (h/load-resource-success
+            {:resource {:old-name "old"
+                        :name "current"
+                        :data {:description "info"
+                               :fields {:id {:type #{"non-null" "ID"}}
+                                        :message {:type #{"list" "String"}}
+                                        :field3 {}}}}}
+            [nil
+             {:status 200
+              :body {:description "No info"
+                     :type ["non-null" ["list" "String"]]}}
+             "Item"])))))
+
+(deftest load-names-success
+  (testing "Load name list"
+    (is (= {:names {:interfaces [:Human :Employee]
+                    :types [:Project :Designer]
+                    :inputs []
+                    :enums []
+                    :unions []
+                    :mutations []
+                    :queries [:hello]
+                    :sources [:github]}}
+           (h/load-names-success
+            {}
+            [nil
+             {:status 200
+              :body fixtures/definition-map}])))))
