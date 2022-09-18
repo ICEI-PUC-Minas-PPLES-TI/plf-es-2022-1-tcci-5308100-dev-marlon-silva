@@ -6,10 +6,10 @@
  (fn [_ [_ handler]]
    {:navigate handler}))
 
-(rf/reg-event-fx
+(rf/reg-event-db
  :set-active-panel
- (fn [{:keys [db]} [_ active-panel]]
-   {:db (assoc db :active-panel active-panel)}))
+ (fn [db [_ active-panel]]
+   (assoc db :active-panel active-panel)))
 
 (rf/reg-sub
  :get-active-panel

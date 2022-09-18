@@ -8,8 +8,17 @@
 
 (def routes
   (atom
-   ["/" {""      :home
-         "about" :about}]))
+   ["/" {""          :home
+         "schemas"   {""            :schemas ;; redirect to types
+                      "/types"      :schemas_types
+                      "/interfaces" :schemas_interfaces
+                      "/inputs"     :schemas_inputs
+                      "/enums"      :schemas_enums
+                      "/unions"     :schemas_unions}
+         "apis"      :sources
+         "queries"   :queries
+         "mutations" :mutations
+         "settings"  :settings}]))
 
 (defn parse
   [url]

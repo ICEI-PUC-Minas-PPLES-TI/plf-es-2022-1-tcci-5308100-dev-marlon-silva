@@ -4,7 +4,7 @@
             [manager.navigation]
             [manager.controller]
             [manager.routes :as routes]
-            [manager.views :as views]))
+            [manager.views.page :as views.page]))
 
 (rf/reg-event-db :initialize-db (constantly {}))
 
@@ -19,7 +19,7 @@
   (rf/clear-subscription-cache!)
   (let [root-el (.getElementById js/document "app")]
     (rdom/unmount-component-at-node root-el)
-    (rdom/render [views/main-panel] root-el)))
+    (rdom/render [views.page/main-panel] root-el)))
 
 (defn init []
   (routes/start!)
