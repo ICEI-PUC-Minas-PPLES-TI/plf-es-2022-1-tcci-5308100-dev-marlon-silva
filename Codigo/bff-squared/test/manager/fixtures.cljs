@@ -29,5 +29,4 @@
      :description "Um framework para construção de BFFs"},
     :sources
     {:github {:uri "https://github.com",
-              :method :get
-              :into-response ["data"]}}})
+              :method :get}}})
