@@ -6,10 +6,11 @@
             [com.walmartlabs.lacinia.pedestal.internal :as i]
             [com.walmartlabs.lacinia.util :as util]
             [clojure.edn :as edn]
+            [environ.core :refer [env]]
             [api.resolver :as resolver]
             [api.diplomat :as diplomat]))
 
-(defn load-definition [] (edn/read-string (slurp "./resources/definition.edn")))
+(defn load-definition [] (edn/read-string (slurp (env :definition-path))))
 
 (defn create-service [compiled-schema options]
   (let [{:keys [api-path ide-path port host env cors]

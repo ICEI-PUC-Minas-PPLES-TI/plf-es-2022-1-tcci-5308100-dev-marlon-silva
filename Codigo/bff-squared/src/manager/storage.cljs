@@ -1,4 +1,5 @@
 (ns manager.storage
+  (:require-macros [manager.env :refer [cljs-env]])
   (:require ["express" :as express]
             ["cors" :as cors]
             [cljs.reader :as reader]
@@ -11,7 +12,7 @@
 (defonce server (atom nil))
 (defonce definition (atom nil))
 
-(def definition-path "./resources/definition.edn")
+(def definition-path (cljs-env :definition-path))
 
 (defn- load-callback [err data]
   (if err

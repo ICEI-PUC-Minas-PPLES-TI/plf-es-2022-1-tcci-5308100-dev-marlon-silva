@@ -5,7 +5,8 @@
                  [com.stuartsierra/component "1.1.0"]
                  [io.aviso/logging "1.0"]
                  [clj-http "3.12.3"]
-                 [cheshire "5.11.0"]]
+                 [cheshire "5.11.0"]
+                 [environ "1.2.0"]]
   :plugins [[lein-cloverage "1.2.4"]]
   :source-paths ["src"]
   :main ^:skip-aot api.server
