@@ -95,37 +95,38 @@
     (is (= {:resource {:old-name nil}}
            (h/new-resource {} [])))))
 
-(deftest load-resource-success-test
-  (testing "Load a resource by name"
-    (is (= {:resource {:old-name "Item"
-                       :name "Item"
-                       :data {:description "No info"
-                              :type #{"list" "String" "non-null"}}}}
-           (h/load-resource-success
-            {:resource {:old-name "old"
-                        :name "current"
-                        :data {:description "info"
-                               :fields {:id {:type #{"non-null" "ID"}}
-                                        :message {:type #{"list" "String"}}
-                                        :field3 {}}}}}
-            [nil
-             {:status 200
-              :body {:description "No info"
-                     :type ["non-null" ["list" "String"]]}}
-             "Item"])))))
+(def db-after-load
+  {:panel->path {:queries [:graphql :queries]}
+   :active-panel :queries
+   :resource-list {:hello
+                   {:type :String
+                    :description "Say helloooou"
+                    :resolve :hello-resolve}}
+   :names {:primitives ["String" "Int" "Long" "Boolean" "ID"]
+           :interfaces ["Human" "Employee"]
+           :types ["Project" "Designer"]
+           :inputs []
+           :enums []
+           :unions []
+           :mutations []
+           :queries ["hello"]
+           :sources ["github"]}})
 
-(deftest load-names-success
-  (testing "Load name list"
-    (is (= {:names {:interfaces [:Human :Employee]
-                    :types [:Project :Designer]
-                    :inputs []
-                    :enums []
-                    :unions []
-                    :mutations []
-                    :queries [:hello]
-                    :sources [:github]}}
-           (h/load-names-success
-            {}
-            [nil
-             {:status 200
-              :body fixtures/definition-map}])))))
+(deftest select-resource-test
+  (testing "Load a resource by name"
+    (is (= (assoc db-after-load :resource
+                  {:path [:graphql :queries]
+                   :old-name "hello"
+                   :name "hello"
+                   :data {:type :String
+                          :description "Say helloooou"
+                          :resolve :hello-resolve}})
+           (h/select-resource db-after-load [nil :hello])))))
+
+(deftest load-all-resources-success-test
+  (testing "Load resource list and all names"
+    (is (= db-after-load
+           (h/load-all-resources-success
+            {:panel->path {:queries [:graphql :queries]}
+             :active-panel :queries}
+            [nil fixtures/definition-map])))))

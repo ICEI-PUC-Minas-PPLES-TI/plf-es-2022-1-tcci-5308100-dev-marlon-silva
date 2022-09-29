@@ -1,24 +1,22 @@
 (ns manager.handlers
   (:require [manager.utils :as u]))
 
-(defn load-resource-list-success
+(defn load-all-resources-success
   [db [_ response]]
-  (assoc db :resource-list (:body response {})))
+  (let [resource-path (get-in db [:panel->path (:active-panel db)])]
+    (assoc db
+           :resource-list (get-in response resource-path {})
+           :names {:primitives  ["String" "Int" "Long" "Boolean" "ID"]
+                   :types       (map (comp name first) (get-in response [:graphql :objects]))
+                   :interfaces  (map (comp name first) (get-in response [:graphql :interfaces]))
+                   :inputs      (map (comp name first) (get-in response [:graphql :input-objects]))
+                   :enums       (map (comp name first) (get-in response [:graphql :enums]))
+                   :unions      (map (comp name first) (get-in response [:graphql :unions]))
+                   :mutations   (map (comp name first) (get-in response [:graphql :mutations]))
+                   :queries     (map (comp name first) (get-in response [:graphql :queries]))
+                   :sources     (map (comp name first) (get response :sources))})))
 
-(defn load-resource-list-failure
-  [db [_ error]]
-  (assoc db :result (-> error
-                        (select-keys [:status-text :response])
-                        (assoc :type :error))))
-
-(defn load-resource-success
-  [db [_ response resource-name]]
-  (assoc db :resource
-         {:old-name resource-name
-          :name resource-name
-          :data (u/types->set (:body response {}))}))
-
-(defn load-resource-failure
+(defn load-all-resources-failure
   [db [_ error]]
   (assoc db :result (-> error
                         (select-keys [:status-text :response])
@@ -26,7 +24,7 @@
 
 (defn save-resource-success
   [db [_ response]]
-  (assoc db :result (assoc (:body response) :type :success)))
+  (assoc db :result (assoc (or response {}) :type :success)))
 
 (defn save-resource-failure
   [db [_ error]]
@@ -36,7 +34,7 @@
 
 (defn delete-resource-success
   [db [_ response]]
-  (assoc db :result (assoc (:body response) :type :success)))
+  (assoc db :result (assoc (or response {}) :type :success)))
 
 (defn delete-resource-failure
   [db [_ error]]
@@ -44,22 +42,9 @@
                         (select-keys [:status-text :response])
                         (assoc :type :error))))
 
-(defn load-names-success
-  [db [_ {:keys [body] :or {body {}}}]]
-  (assoc db :names {:types       (map first (get-in body [:graphql :objects]))
-                    :interfaces  (map first (get-in body [:graphql :interfaces]))
-                    :inputs      (map first (get-in body [:graphql :input-objects]))
-                    :enums       (map first (get-in body [:graphql :enums]))
-                    :unions      (map first (get-in body [:graphql :unions]))
-                    :mutations   (map first (get-in body [:graphql :mutations]))
-                    :queries     (map first (get-in body [:graphql :queries]))
-                    :sources     (map first (get body :sources))}))
-
-(defn load-names-failure
-  [db [_ error]]
-  (assoc db :result (-> error
-                        (select-keys [:status-text :response])
-                        (assoc :type :error))))
+(defn reload-resources
+  [_ _]
+  {:fx [[:dispatch [:load-all-resources]]]})
 
 (defn new-resource
   [db _]
@@ -74,10 +59,36 @@
                              (inc (count (get-in db path)))))
                {})))
 
+(defn delete-resource-property
+  [db [_ path name]]
+  (update-in db (apply vector :resource path) dissoc name))
+
 (defn get-resource
   [db _]
   (:resource db))
 
+(defn get-resource-list
+  [db _]
+  (:resource-list db))
+
+(defn get-names
+  [db [_ kinds]]
+  (select-keys (:names db) kinds))
+
 (defn update-resource
   [db [_ path function & args]]
   (update-in db (vec (cons :resource path)) (partial apply function) args))
+
+(defn select-resource
+  [db [_ resource-name]]
+  (assoc db :resource {:path (get-in db [:panel->path (:active-panel db)])
+                       :old-name (name resource-name)
+                       :name (name resource-name)
+                       :data (u/types->set (-> db :resource-list resource-name))}))
+
+(defn- valid-resource? [resource kind]
+  true)
+
+(defn check-resource
+  [db _]
+  (valid-resource? (:resource db) (-> db :resource :path last)))

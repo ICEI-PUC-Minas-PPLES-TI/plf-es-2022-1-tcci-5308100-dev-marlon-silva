@@ -9,9 +9,8 @@
 (rf/reg-event-fx
  :set-active-panel
  (fn [{:keys [db]} [_ active-panel]]
-   (let [path (get-in db [:panel->path active-panel])]
-     {:db (dissoc (assoc db :active-panel active-panel) :resource)
-      :fx [(when path [:dispatch [:load-all-resources path]])]})))
+   {:db (-> db (assoc :active-panel active-panel) (dissoc :resource))
+    :fx [[:dispatch [:load-all-resources]]]}))
 
 (rf/reg-sub
  :get-active-panel
