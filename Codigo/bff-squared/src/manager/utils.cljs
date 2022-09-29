@@ -1,5 +1,6 @@
 (ns manager.utils
-  (:require [clojure.walk :as w]))
+  (:require [clojure.walk :as w]
+            [clojure.string :as s]))
 
 (defn- format-type [type]
   (let [type (if (vector? type) type [type])]
@@ -35,3 +36,9 @@
 
 (defn types->set [m]
   (w/postwalk #(if (map? %) (maybe-format-type %) %) m))
+
+(defn active-panel? [active-panel panel]
+  (when (s/includes? (name active-panel) (name panel)) :active))
+
+(defn panel->vector [panel]
+  (mapv keyword (s/split (name panel) #"_")))
