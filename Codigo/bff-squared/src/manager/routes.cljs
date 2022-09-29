@@ -1,21 +1,22 @@
 (ns manager.routes
   (:require [bidi.bidi :as bidi]
             [pushy.core :as pushy]
+            [manager.utils :as u]
             [re-frame.core :as rf]))
 
-(defmulti panels identity)
+(defmulti panels (fn [panel] (first (u/panel->vector panel))))
 (defmethod panels :default [] [:div "No panel found for this route."])
 
 (def routes
   (atom
    ["/" {""          :home
-         "schemas"   {""            :schemas ;; redirect to types
+         "schemas"   {""            :schemas
                       "/types"      :schemas_types
                       "/interfaces" :schemas_interfaces
                       "/inputs"     :schemas_inputs
                       "/enums"      :schemas_enums
                       "/unions"     :schemas_unions}
-         "apis"      :sources
+         "apis"      :apis
          "queries"   :queries
          "mutations" :mutations
          "settings"  :settings}]))
@@ -30,8 +31,7 @@
 
 (defn dispatch
   [route]
-  (let [panel (keyword (str (name (:handler route)) "-panel"))]
-    (rf/dispatch [:set-active-panel panel])))
+  (rf/dispatch [:set-active-panel (:handler route)]))
 
 (defonce history
   (pushy/pushy dispatch parse))
