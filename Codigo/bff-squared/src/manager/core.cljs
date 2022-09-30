@@ -18,7 +18,10 @@
     :apis  [:sources]
     :queries [:graphql :queries]
     :mutations [:graphql :mutations]
-    :settings  [:config]}}))
+    :settings  [:config]}
+   :names
+   {:primitives  ["String" "Int" "Long" "Boolean" "ID"]
+    :request ["body" "headers" "params"]}}))
 
 (def debug?
   ^boolean goog.DEBUG)

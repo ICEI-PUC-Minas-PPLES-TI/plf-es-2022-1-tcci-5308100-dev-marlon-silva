@@ -2,6 +2,7 @@
   (:require [re-frame.core :as rf]
             [day8.re-frame.http-fx]
             [manager.handlers :as h]
+            [manager.utils :as u]
             [ajax.core :as ajax]))
 
 (defn load-all-resources
@@ -20,7 +21,7 @@
   {:db         (dissoc db :result)
    :http-xhrio {:method          :post
                 :uri             "http://localhost:8180/write"
-                :params          (:resource db)
+                :params          (u/prepare-json (:resource db))
                 :format          (ajax/json-request-format)
                 :response-format (ajax/json-response-format {:keywords? true})
                 :on-success      [:save-resource-success]
@@ -72,6 +73,11 @@
 (rf/reg-sub :get-resource h/get-resource)
 ;; Get names
 (rf/reg-sub :get-names h/get-names)
+
+;; Get result
+(rf/reg-sub :get-result h/get-result)
+;; Delete result
+(rf/reg-event-db :delete-result h/delete-result)
 
 ;; Check resource
 (rf/reg-sub :check-resource h/check-resource)

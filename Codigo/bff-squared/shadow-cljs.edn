@@ -9,6 +9,7 @@
   [re-com "2.13.2"]
   [bidi "2.1.6"]
   [environ "1.2.0"]
+  [prismatic/schema "1.4.1"]
   [clj-commons/pushy "0.3.10"]
   [day8.re-frame/http-fx "0.2.4"]
   [binaryage/devtools "1.0.6"]

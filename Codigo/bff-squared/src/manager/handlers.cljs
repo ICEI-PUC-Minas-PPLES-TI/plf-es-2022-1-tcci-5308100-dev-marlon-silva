@@ -4,17 +4,15 @@
 (defn load-all-resources-success
   [db [_ response]]
   (let [resource-path (get-in db [:panel->path (:active-panel db)])]
-    (assoc db
-           :resource-list (get-in response resource-path {})
-           :names {:primitives  ["String" "Int" "Long" "Boolean" "ID"]
-                   :types       (map (comp name first) (get-in response [:graphql :objects]))
-                   :interfaces  (map (comp name first) (get-in response [:graphql :interfaces]))
-                   :inputs      (map (comp name first) (get-in response [:graphql :input-objects]))
-                   :enums       (map (comp name first) (get-in response [:graphql :enums]))
-                   :unions      (map (comp name first) (get-in response [:graphql :unions]))
-                   :mutations   (map (comp name first) (get-in response [:graphql :mutations]))
-                   :queries     (map (comp name first) (get-in response [:graphql :queries]))
-                   :sources     (map (comp name first) (get response :sources))})))
+    (-> (assoc db :resource-list (get-in response resource-path {}))
+        (update :names merge {:types       (map (comp name first) (get-in response [:graphql :objects]))
+                              :interfaces  (map (comp name first) (get-in response [:graphql :interfaces]))
+                              :inputs      (map (comp name first) (get-in response [:graphql :input-objects]))
+                              :enums       (map (comp name first) (get-in response [:graphql :enums]))
+                              :unions      (map (comp name first) (get-in response [:graphql :unions]))
+                              :mutations   (map (comp name first) (get-in response [:graphql :mutations]))
+                              :queries     (map (comp name first) (get-in response [:graphql :queries]))
+                              :sources     (map (comp name first) (get response :sources))}))))
 
 (defn load-all-resources-failure
   [db [_ error]]
@@ -24,7 +22,8 @@
 
 (defn save-resource-success
   [db [_ response]]
-  (assoc db :result (assoc (or response {}) :type :success)))
+  (-> (update db :resource assoc :old-name (-> db :resource :name))
+      (assoc :result {:response response :type :success})))
 
 (defn save-resource-failure
   [db [_ error]]
@@ -34,7 +33,10 @@
 
 (defn delete-resource-success
   [db [_ response]]
-  (assoc db :result (assoc (or response {}) :type :success)))
+  (assoc db
+         :result {:response response :type :success}
+         :resource {:path (get-in db [:panel->path (:active-panel db)])
+                    :old-name nil}))
 
 (defn delete-resource-failure
   [db [_ error]]
@@ -48,7 +50,9 @@
 
 (defn new-resource
   [db _]
-  (assoc db :resource {:old-name nil}))
+  (assoc db :resource
+         {:path (get-in db [:panel->path (:active-panel db)])
+          :old-name nil}))
 
 (defn new-resource-property
   [db [_ kind]]
@@ -75,20 +79,26 @@
   [db [_ kinds]]
   (select-keys (:names db) kinds))
 
+(defn get-result
+  [db _]
+  (:result db))
+
+(defn delete-result
+  [db _]
+  (dissoc db :result))
+
 (defn update-resource
   [db [_ path function & args]]
   (update-in db (vec (cons :resource path)) (partial apply function) args))
 
 (defn select-resource
   [db [_ resource-name]]
-  (assoc db :resource {:path (get-in db [:panel->path (:active-panel db)])
-                       :old-name (name resource-name)
-                       :name (name resource-name)
-                       :data (u/types->set (-> db :resource-list resource-name))}))
-
-(defn- valid-resource? [resource kind]
-  true)
+  (-> (dissoc db :result)
+      (assoc :resource {:path (get-in db [:panel->path (:active-panel db)])
+                        :old-name (name resource-name)
+                        :name (name resource-name)
+                        :data (u/types->set (-> db :resource-list resource-name))})))
 
 (defn check-resource
   [db _]
-  (valid-resource? (:resource db) (-> db :resource :path last)))
+  (u/valid-resource? (:resource db) (-> db :resource :path last)))

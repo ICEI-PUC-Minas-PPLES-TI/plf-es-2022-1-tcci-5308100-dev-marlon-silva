@@ -3,6 +3,7 @@
             [reagent.core :as r]
             [clojure.string :as string]
             [clojure.set :as cs]
+            [manager.utils :as u]
             [manager.components.list :as list]
             [re-com.core :as rc :refer [at]]))
 
@@ -56,12 +57,12 @@
        :style {:width "100%"}
        :value value
        :placeholder "name"
-       :on-change #(rf/dispatch [:update-resource [] assoc :name (-> % .-target .-value)])}]
+       :on-change #(rf/dispatch [:update-resource [] assoc :name (-> % .-target .-value u/filter-characteres)])}]
      (when kind [:span.input-group-addon kind])]))
 
 (defn subname-input [value path & children]
   #_{:clj-kondo/ignore [:unresolved-symbol]}
-  (r/with-let [buffer (r/atom value)]
+  (r/with-let [buffer (r/atom (name value))]
     ^{:key value}
     [:div.input-group
      [:span.input-group-addon "Name:"]
@@ -69,10 +70,10 @@
       {:type :text
        :spell-check :false
        :style {:width "100%"}
-       :value (name @buffer)
+       :value @buffer
        :placeholder "name"
-       :on-change #(reset! buffer (-> % .-target .-value keyword))
-       :on-blur #(rf/dispatch [:update-resource path cs/rename-keys {value @buffer}])}]
+       :on-change #(reset! buffer (-> % .-target .-value u/filter-characteres))
+       :on-blur #(rf/dispatch [:update-resource path cs/rename-keys {value (keyword @buffer)}])}]
      children]))
 
 (defn text-input [field label path & children]
@@ -168,6 +169,19 @@
     :on-click #(do (rf/dispatch (apply vector event args))
                    (when reload? (rf/dispatch [:reload-resources])))}
    label])
+
+(defn alert []
+  (let [{:keys [type response status-text]} @(rf/subscribe [:get-result])]
+    (when type
+      [:div.alert.alert-dismissible
+       {:role "alert"
+        :class (if (= type :error) "alert-danger" "alert-success")
+        :style {:margin 0 :padding "5px 27px 5px 10px"}}
+       [:button.close
+        {:aria-label "Close" :type "button"
+         :on-click #(rf/dispatch [:delete-result])}
+        [:span {:aria-hidden "true"} "×"]]
+       [:strong (or (:message response) status-text)]])))
 
 (defn row [position & children]
   [rc/h-box :src (at)

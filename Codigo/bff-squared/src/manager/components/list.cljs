@@ -43,17 +43,17 @@
         selected-item (rf/subscribe [:get-resource])]
     [rc/v-box :src (at)
      :size "auto"
-     :max-height "78.5vh"
+     :max-height "78.6vh"
      :style {:overflow :auto}
      :children [(if (empty? @items)
                   [empty-list-alert]
                   [:div.list-group
-                   (map (partial list-item (:old-name @selected-item)) @items)])]]))
+                   (map (partial list-item (:old-name @selected-item)) (sort-by first @items))])]]))
 
 (defn multi-resources [active-panel]
   [rc/v-box :src (at)
    :size "auto"
-   :max-height "78.5vh"
+   :max-height "78.6vh"
    :gap "3vh"
    :children [[navbar active-panel]
               [single-resource]]])
