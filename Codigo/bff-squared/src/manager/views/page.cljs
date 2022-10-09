@@ -3,11 +3,16 @@
             [re-com.core :as rc :refer [at]]
             [manager.utils :as u]
             [manager.routes :as routes]
-            [manager.views.settings]
-            [manager.views.mutations]
-            [manager.views.queries]
+            [manager.views.schemas.core]
+            [manager.views.schemas.types]
+            [manager.views.schemas.inputs]
+            [manager.views.schemas.interfaces]
+            [manager.views.schemas.unions]
+            [manager.views.schemas.enums]
             [manager.views.apis]
-            [manager.views.schemas]))
+            [manager.views.queries]
+            [manager.views.mutations]
+            [manager.views.settings]))
 
 (defn global-header []
   [rc/box :src (at)
@@ -37,8 +42,9 @@
 
 (defn main-panel []
   (let [active-panel (rf/subscribe [:get-active-panel])]
-    (when @active-panel
+    (if @active-panel
       [rc/v-box :src (at)
        :children [[global-header]
                   [navbar @active-panel]
-                  [routes/panels @active-panel]]])))
+                  [routes/panels @active-panel]]]
+      [:div "No panel found for this route."])))
