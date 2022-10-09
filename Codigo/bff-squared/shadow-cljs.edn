@@ -6,6 +6,7 @@
  [[reagent "1.1.1"]
   [re-frame "1.2.0"]
   [day8.re-frame/tracing "0.6.2"]
+  [day8.re-frame/async-flow-fx "0.3.0"]
   [re-com "2.13.2"]
   [bidi "2.1.6"]
   [environ "1.2.0"]

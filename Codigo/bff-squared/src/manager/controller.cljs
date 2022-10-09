@@ -1,5 +1,5 @@
 (ns manager.controller
-  (:require [re-frame.core :as rf]
+  (:require [re-frame.core :as rf] 
             [day8.re-frame.http-fx]
             [manager.handlers :as h]
             [manager.utils :as u]
@@ -21,7 +21,7 @@
   {:db         (dissoc db :result)
    :http-xhrio {:method          :post
                 :uri             "http://localhost:8180/write"
-                :params          (u/prepare-json (:resource db))
+                :params          (u/internal->wire (:resource db))
                 :format          (ajax/json-request-format)
                 :response-format (ajax/json-response-format {:keywords? true})
                 :on-success      [:save-resource-success]
@@ -54,6 +54,9 @@
 
 ;; Select resource
 (rf/reg-event-db :select-resource h/select-resource)
+;; Select config
+(rf/reg-event-db :select-config h/select-config)
+
 
 ;; New resource
 (rf/reg-event-db :new-resource h/new-resource)

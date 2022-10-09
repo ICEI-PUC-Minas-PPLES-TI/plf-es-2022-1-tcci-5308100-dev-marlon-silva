@@ -20,8 +20,10 @@
     :mutations [:graphql :mutations]
     :settings  [:config]}
    :names
-   {:primitives  ["String" "Int" "Long" "Boolean" "ID"]
-    :request ["body" "headers" "params"]}}))
+   {:env ["dev" "staging" "prod"]
+    :scalar  ["String" "Int" "Long" "Boolean" "ID"]
+    :request ["body" "headers" "params"]
+    :methods ["GET" "POST" "PATCH" "PUT" "DELETE"]}}))
 
 (def debug?
   ^boolean goog.DEBUG)

@@ -5,6 +5,7 @@
   [db [_ response]]
   (let [resource-path (get-in db [:panel->path (:active-panel db)])]
     (-> (assoc db :resource-list (get-in response resource-path {}))
+        (assoc-in [:resource :path] resource-path)
         (update :names merge {:types       (map (comp name first) (get-in response [:graphql :objects]))
                               :interfaces  (map (comp name first) (get-in response [:graphql :interfaces]))
                               :inputs      (map (comp name first) (get-in response [:graphql :input-objects]))
@@ -55,17 +56,20 @@
           :old-name nil}))
 
 (defn new-resource-property
-  [db [_ kind]]
+  [db [_ kind index?]]
   (let [path [:resource :data kind]
-        kind-name (name kind)]
-    (update-in db path assoc
-               (keyword (str (subs kind-name 0 (dec (count kind-name)))
-                             (inc (count (get-in db path)))))
-               {})))
+        kind-name (name kind)
+        element-name (str (subs kind-name 0 (dec (count kind-name)))
+                          (inc (count (get-in db path))))]
+    (if index?
+      (update-in db path (fnil conj []) {:enum-value element-name})
+      (update-in db path assoc (keyword element-name) {}))))
 
 (defn delete-resource-property
-  [db [_ path name]]
-  (update-in db (apply vector :resource path) dissoc name))
+  [db [_ path key index?]]
+  (if index?
+    (update-in db (apply vector :resource path) u/drop-nth key)
+    (update-in db (apply vector :resource path) dissoc key)))
 
 (defn get-resource
   [db _]
@@ -97,8 +101,15 @@
       (assoc :resource {:path (get-in db [:panel->path (:active-panel db)])
                         :old-name (name resource-name)
                         :name (name resource-name)
-                        :data (u/types->set (-> db :resource-list resource-name))})))
+                        :data (u/wire->internal (-> db :resource-list resource-name))})))
 
 (defn check-resource
   [db _]
   (u/valid-resource? (:resource db) (-> db :resource :path last)))
+
+(defn select-config
+  [db _]
+  (assoc db :resource {:path []
+                       :old-name "config"
+                       :name "config"
+                       :data (u/wire->internal (:resource-list db))}))
