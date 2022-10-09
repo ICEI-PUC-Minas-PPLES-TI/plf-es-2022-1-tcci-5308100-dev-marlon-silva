@@ -1,6 +1,7 @@
 (ns manager.utils
   (:require [clojure.walk :as w]
-            [schema.core :as schema :include-macros true]
+            [schema.core :refer [check Bool]]
+            [manager.validations :as v]
             [clojure.string :as s]))
 
 (defn- format-type [type]
@@ -30,14 +31,6 @@
        (filter map?)
        (some #(contains? (set (flatten (vals %))) v))))
 
-(defn- maybe-format-type [m]
-  (if (or (string? (:type m)) (vector? (:type m)))
-    (update m :type #(-> % vector flatten set))
-    m))
-
-(defn types->set [m]
-  (w/postwalk #(if (map? %) (maybe-format-type %) %) m))
-
 (defn active-panel? [active-panel panel]
   (when (s/includes? (name active-panel) (name panel)) :active))
 
@@ -49,6 +42,18 @@
        (filter #(re-matches #"(\w|-|\?|>|<|\!)" %))
        (s/join)))
 
+(defn drop-nth [coll n]
+  (vec (keep-indexed #(when (not= %1 n) %2) coll)))
+
+(defn- maybe-format-resource [m]
+  (cond-> m
+    ((comp #(or (string? %) (vector? %)) :type) m) (update :type #(-> % vector flatten set))
+    ((comp vector? :cors) m) (update :cors (partial s/join ", "))
+    ((comp string? :method) m) (update :method s/upper-case)))
+
+(defn wire->internal [m]
+  (w/postwalk #(if (map? %) (maybe-format-resource %) %) m))
+
 (defn- sort-types-comparator [t1 t2]
   (let [order {"non-null" 1 "list" 2}
         t1-weight (get order t1 3)
@@ -59,32 +64,24 @@
   (cond-> m
     ((comp set? :type) m) (update :type #(->> (vec %) (sort sort-types-comparator)))
     ((comp empty? :implements) m) (dissoc :implements)
-    ((comp some? :isDeprecated) m) (dissoc :isDeprecated)))
+    ((comp some? :isDeprecated) m) (dissoc :isDeprecated)
+    ((comp s/blank? :cors) m) (dissoc :cors)
+    ((comp not s/blank? :cors) m) (update :cors #(map s/trim (s/split % #",")))
+    ((comp string? :method) m) (update :method s/lower-case)))
 
-(defn prepare-json [m]
+(defn internal->wire [m]
   (w/postwalk #(if (map? %) (maybe-prepare-json %) %) m))
 
-(defn- not-empty-map [value]
-  (schema/conditional not-empty value))
-
-(defn- not-empty-type [value]
-  (schema/conditional #(not-empty (disj % "non-null" "list")) value))
-
-(schema/defschema TypeSchema
-  {(schema/required-key :path) [schema/Keyword]
-   (schema/required-key :old-name) schema/Str
-   (schema/required-key :name) schema/Str
-   (schema/required-key :data)
-   {(schema/optional-key :description) schema/Str
-    (schema/optional-key :implements) [schema/Str]
-    (schema/required-key :fields)
-    (not-empty-map {schema/Keyword {(schema/optional-key :description) schema/Str
-                                    (schema/required-key :type) (not-empty-type #{schema/Str})
-                                    (schema/optional-key :isDeprecated) schema/Bool
-                                    (schema/optional-key :deprecated) schema/Str}})}})
-
 (defn valid-resource? [resource kind]
-  (nil?
-   (case kind
-     :objects (schema/check TypeSchema resource)
-     true)))
+  (nil? (check
+         (case kind
+           :objects v/Object
+           :input-objects v/InputObject
+           :interfaces v/Interface
+           :unions v/Union
+           :enums v/Enum
+           :queries v/Query
+           :mutations v/Mutation
+           :sources v/Source
+           v/Config)
+         resource)))
