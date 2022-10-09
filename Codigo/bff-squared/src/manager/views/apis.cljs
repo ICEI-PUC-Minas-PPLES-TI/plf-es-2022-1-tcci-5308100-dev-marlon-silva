@@ -1,12 +1,27 @@
 (ns manager.views.apis
-  (:require [re-frame.core :as rf]
-            [re-com.core :as rc :refer [at]]
+  (:require [re-com.core :as rc :refer [at]]
+            [manager.components.list :as list]
+            [manager.components.form :as form]
             [manager.routes :as routes]))
 
-(defn sources-panel []
-  [rc/h-box :src (at) 
-   :justify :around
-   :children [[:span "apis list"]
-              [:span "apis form"]]])
+(defn form []
+  [form/scaffold
+   [form/header]
+   [form/inputs nil
+    [form/name-input "API"]
+    [form/text-input :description "Description:" form/root]
+    [form/single-select-input :method "Method:" [:methods] form/root]
+    [form/text-input :uri "URI:" form/root]]
+   [form/footer]])
 
-(defmethod routes/panels :sources-panel [] [sources-panel])
+(defn apis-panel []
+  [rc/h-box :src (at)
+   :padding "3vh 5em 0 5em"
+   :gap "5em"
+   :justify :center
+   :children [[rc/box :size "auto"
+               :width "36.4%"
+               :child [list/single-resource]]
+              [form]]])
+
+(defmethod routes/panels :apis [] [apis-panel])
