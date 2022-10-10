@@ -34,7 +34,7 @@
              (required-key :fields)
              (non-empty {schema/Keyword {(optional-key :description) schema/Str
                                          (required-key :type) (valid-type #{schema/Str})
-                                         (optional-key :default-value) schema/Bool
+                                         (optional-key :default-value) schema/Str
                                          (optional-key :isDeprecated) schema/Bool
                                          (optional-key :deprecated) schema/Str}})}))
 
@@ -50,7 +50,7 @@
 (schema/defschema Union
   (resource true
             {(optional-key :description) schema/Str
-             (optional-key :members) [schema/Str]}))
+             (required-key :members) (non-empty #{schema/Str})}))
 
 (schema/defschema Enum
   (resource true

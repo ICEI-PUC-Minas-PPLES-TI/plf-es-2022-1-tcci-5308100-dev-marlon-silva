@@ -1,6 +1,6 @@
 (ns manager.utils
   (:require [clojure.walk :as w]
-            [schema.core :refer [check Bool]]
+            [schema.core :refer [check]]
             [manager.validations :as v]
             [clojure.string :as s]))
 
