@@ -90,42 +90,113 @@
                                         :message {:type #{"list" "String"}}}}}}
             [nil :fields])))))
 
-(deftest new-resource-test
-  (testing "New blank resource"
-    (is (= {:resource {:old-name nil}}
-           (h/new-resource {} [])))))
-
-(deftest load-resource-success-test
-  (testing "Load a resource by name"
-    (is (= {:resource {:old-name "Item"
-                       :name "Item"
-                       :data {:description "No info"
-                              :type #{"list" "String" "non-null"}}}}
-           (h/load-resource-success
+(deftest delete-resource-property-test
+  (testing "Delete resource property by name"
+    (is (= {:resource {:old-name "old"
+                       :name "current"
+                       :data {:description "info"
+                              :fields {:id {:type #{"non-null" "ID"}}
+                                       :message {:type #{"list" "String"}}}}}}
+           (h/delete-resource-property
             {:resource {:old-name "old"
                         :name "current"
                         :data {:description "info"
                                :fields {:id {:type #{"non-null" "ID"}}
                                         :message {:type #{"list" "String"}}
-                                        :field3 {}}}}}
-            [nil
-             {:status 200
-              :body {:description "No info"
-                     :type ["non-null" ["list" "String"]]}}
-             "Item"])))))
+                                        :any-field {:type "String"}}}}}
+            [nil [:data :fields] :any-field])))))
 
-(deftest load-names-success
-  (testing "Load name list"
-    (is (= {:names {:interfaces [:Human :Employee]
-                    :types [:Project :Designer]
-                    :inputs []
-                    :enums []
-                    :unions []
-                    :mutations []
-                    :queries [:hello]
-                    :sources [:github]}}
-           (h/load-names-success
-            {}
-            [nil
-             {:status 200
-              :body fixtures/definition-map}])))))
+(deftest new-resource-test
+  (testing "New blank resource"
+    (is (= {:panel->path {:queries [:graphql :queries]}
+            :active-panel :queries
+            :resource {:path [:graphql :queries] :old-name nil}}
+           (h/new-resource
+            {:panel->path {:queries [:graphql :queries]}
+             :active-panel :queries}
+            [])))))
+
+(def db-default-names
+  {:env ["dev" "staging" "prod"]
+   :scalar  ["String" "Int" "Long" "Boolean" "ID"]
+   :request ["body" "headers" "params"]
+   :methods ["GET" "POST" "PATCH" "PUT" "DELETE"]})
+
+(def db-after-load
+  {:panel->path {:queries [:graphql :queries]}
+   :active-panel :queries
+   :resource {:path [:graphql :queries]}
+   :resource-list {:hello
+                   {:type :String
+                    :description "Say helloooou"
+                    :resolve :hello-resolve}}
+   :names (merge db-default-names
+                 {:interfaces ["Human" "Employee"]
+                  :types ["Project" "Designer"]
+                  :inputs []
+                  :enums []
+                  :unions []
+                  :mutations []
+                  :queries ["hello"]
+                  :sources ["github"]})})
+
+(deftest select-resource-test
+  (testing "Select a resource by name"
+    (is (= (assoc db-after-load :resource
+                  {:path [:graphql :queries]
+                   :old-name "hello"
+                   :name "hello"
+                   :data {:type :String
+                          :description "Say helloooou"
+                          :resolve :hello-resolve}})
+           (h/select-resource db-after-load [nil :hello])))))
+
+(deftest load-all-resources-success-test
+  (testing "Load resource list and all names"
+    (is (= db-after-load
+           (h/load-all-resources-success
+            {:panel->path {:queries [:graphql :queries]}
+             :active-panel :queries
+             :names db-default-names}
+            [nil fixtures/definition-map])))))
+
+(deftest select-config-test
+  (testing "Select config data"
+    (is (= {:resource-list {:name "Test App"
+                            :description "BFF using GraphQL"}
+            :resource {:path []
+                       :old-name "config"
+                       :name "config"
+                       :data {:name "Test App"
+                              :description "BFF using GraphQL"}}}
+           (h/select-config
+            {:resource-list {:name "Test App"
+                             :description "BFF using GraphQL"}}
+            [])))))
+
+(deftest check-resource-test
+  (testing "Valid resource of kind Object"
+    (is (true? (h/check-resource
+                {:resource {:path [:graphql :objects]
+                            :old-name nil
+                            :name "New Type"
+                            :data {:description "Type for testing"
+                                   :implements ["Any"]
+                                   :fields {:field1 {:type #{"String"}}
+                                            :fieldn {:type #{"list" "String"}
+                                                     :isDeprecated true
+                                                     :deprecated "Old field"}}}}}
+                []))))
+
+  (testing "Invalid resource of kind Object"
+    (is (false? (h/check-resource
+                {:resource {:path [:graphql :objects]
+                            :old-name nil
+                            :name "New Type"
+                            :data {:description "Type for testing"
+                                   :implements ["Any"]
+                                   :fields {:field1 {:type #{"non-null"}}
+                                            :fieldn {:type #{"list" "String"}
+                                                     :isDeprecated true
+                                                     :deprecated "Old field"}}}}}
+                [])))))

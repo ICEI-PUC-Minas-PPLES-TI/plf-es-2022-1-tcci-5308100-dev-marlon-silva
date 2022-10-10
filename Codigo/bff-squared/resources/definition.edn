@@ -1,129 +1,135 @@
 {:graphql
  {:objects
-  {:OneAdviceResponse
+  {:ReposResponseSuccess
    {:fields
-    {:status {:type :Int}
-     :body {:type :AdviceBody}}}
-   :AdviceBody
-   {:fields
-    {:slip {:type :AdviceSlip}
-     :message {:type :AdviceMessage}}}
+    {:status {:type :Int},
+     :body {:type (list :Repo)},
+     :headers {:type :ReposResponseHeaders},
+     :links {:type :Pagination}}},
+   :AdviceSlip
+   {:description "Advice Slip",
+    :fields
+    {:advice {:type (non-null :String)}, :id {:type (non-null :Int)}}},
+   :Link {:fields {:href {:type :String}}},
+   :RandomUsersResponse
+   {:fields {:body {:type :RandomUsersBody}, :status {:type :Int}}},
    :AdviceMessage
    {:fields
-    {:type {:type :String}
-     :text {:type :String}}}
-   :AdviceSlip
-   {:description "Advice Slip"
-    :fields
-    {:id {:type (non-null :Int)}
-     :advice {:type (non-null :String)}}}
-   :AdvicesResponse
-   {:fields
-    {:status {:type :Int}
-     :body {:type :AdvicesBody}}}
-   :AdvicesBody
-   {:fields
-    {:total_results {:type :String}
-     :query {:type :String}
-     :slips {:type (list :AdviceSlipeWithDate)}
-     :message {:type :AdviceMessage}}}
-   :AdviceSlipeWithDate
-   {:fields
-    {:id {:type (non-null :Int)}
-     :advice {:type (non-null :String)}
-     :date {:type (non-null :String)}}}
-   :ReposResponseSuccess
-   {:fields
-    {:status {:type :Int}
-     :body {:type (list :Repo)}
-     :headers {:type :ReposResponseHeaders}
-     :links {:type :Pagination}}}
-   :ReposResponseError
-   {:fields
-    {:status {:type :Int}
-     :body {:type :ReposResponseBodyError}
-     :headers {:type :ReposResponseHeaders}}}
+    {:type {:type :String, :description "error type"},
+     :text {:type :String}}},
    :ReposResponseHeaders
-   {:fields
-    {:date {:type :String}
-     :etag {:type :String}}}
-   :Pagination
-   {:fields
-    {:prev {:type :Link}
-     :next {:type :Link}}}
-   :Link
-   {:fields
-    {:href {:type :String}}}
-   :Repo
-   {:fields
-    {:id {:type :Int}
-     :name {:type :String}
-     :url {:type :String}
-     :description {:type :String}}}
+   {:fields {:date {:type :String}, :etag {:type :String}}},
+   :RandomUsersBody {:fields {:results {:type (list :RandomUser)}}},
    :ReposResponseBodyError
    {:fields
-    {:message {:type :String}
-     :documentation_url {:type :String}}}}
-
-  :unions
-  {:ReposResponse
-   {:description "Success or Error"
-    :members [:ReposResponseSuccess :ReposResponseError]}}
-
+    {:message {:type :String}, :documentation_url {:type :String}}},
+   :AdviceSlipWithDate
+   {:fields
+    {:id {:type (non-null :Int)},
+     :advice {:type (non-null :String)},
+     :date {:type (non-null :String)}}},
+   :ReposResponseError
+   {:fields
+    {:status {:type :Int},
+     :body {:type :ReposResponseBodyError},
+     :headers {:type :ReposResponseHeaders}}},
+   :Pagination {:fields {:prev {:type :Link}, :next {:type :Link}}},
+   :AdvicesBody
+   {:implements [:AdviceError],
+    :fields
+    {:total_results {:type :String},
+     :query {:type :String},
+     :slips {:type (list :AdviceSlipWithDate)},
+     :message {:type :AdviceMessage}}},
+   :OneAdviceResponse
+   {:fields {:status {:type :Int}, :body {:type :AdviceBody}}},
+   :AdvicesResponse
+   {:fields {:status {:type :Int}, :body {:type :AdvicesBody}}},
+   :RandomUserName
+   {:fields {:last {:type :String}, :first {:type :String}}},
+   :RandomUser
+   {:fields
+    {:email {:type :String},
+     :phone {:type :String},
+     :gender {:type :RandomUserGender},
+     :name {:type :RandomUserName}}},
+   :AdviceBody
+   {:implements [:AdviceSuccess :AdviceError],
+    :fields
+    {:slip {:type :AdviceSlip}, :message {:type :AdviceMessage}}},
+   :Repo
+   {:fields
+    {:id {:type :Int},
+     :name {:type :String},
+     :url {:type :String},
+     :description {:type :String}}}},
+  :interfaces
+  {:AdviceSuccess {:fields {:slip {:type :AdviceSlip}}},
+   :AdviceError {:fields {:message {:type :AdviceMessage}}},
+   :GenericSuccess {:fields {:ok {:type :Boolean}}},
+   :GenericError {:fields {:message {:type :String}}}},
+  :unions {},
   :input-objects
-  {:GetAdviceParams
-   {:fields
-    {:adviceId {:type (non-null :ID)}}}
-   :SearchAdviceParams
-   {:fields
-    {:query {:type :String}}}
+  {:GetAdviceParams {:fields {:adviceId {:type (non-null :ID)}}},
+   :SearchAdviceParams {:fields {:query {:type :String}}},
    :UserReposParams
    {:fields
-    {:userId {:type (non-null :String)}
-     :page {:type :Int}
-     :per_page {:type :Int}}}
-   :UserReposHeaders
-   {:fields
-    {:Authorization {:type :String}}}}
-
+    {:username {:type (non-null :String)},
+     :page {:type :String},
+     :per_page {:type :String, :default-value "3"}}},
+   :UserReposHeaders {:fields {:Authorization {:type :String}}},
+   :RandomUsersParams
+   {:fields {:results {:type :String, :default-value "4"}}}},
   :queries
   {:adviceById
-   {:type :OneAdviceResponse
-    :description "Get an advice slip by ID"
-    :resolve :GetAdviceSlipById
-    :args
-    {:params {:type :GetAdviceParams}}}
+   {:type :OneAdviceResponse,
+    :description "Get an advice slip by ID",
+    :resolve :GetAdviceSlipById,
+    :args {:params {:type :GetAdviceParams}}},
    :randomAdvice
-   {:type :OneAdviceResponse
-    :description "Get a random advice slip"
-    :resolve :GetRandomAdvice}
+   {:type :OneAdviceResponse,
+    :description "Get a random advice slip",
+    :resolve :GetRandomAdvice},
    :searchAdvice
-   {:type :AdvicesResponse
-    :description "Search advices by text"
-    :resolve :SearchAdvices
-    :args
-    {:params {:type :SearchAdviceParams}}}
+   {:type :AdvicesResponse,
+    :description "Search advices by text",
+    :resolve :SearchAdvices,
+    :args {:params {:type :SearchAdviceParams}}},
    :getUserRepos
-   {:type :ReposResponseSuccess
-    :resolve :GitHubRepos
+   {:type :ReposResponseSuccess,
+    :resolve :GitHubRepos,
     :args
-    {:params {:type :UserReposParams}
-     :headers {:type :UserReposHeaders}}}}}
-
+    {:params {:type :UserReposParams},
+     :headers {:type :UserReposHeaders}}},
+   :GetRandomUsers
+   {:resolve :GET_RandomUsers,
+    :type :RandomUsersResponse,
+    :args {:params {:type :RandomUsersParams}}}},
+  :enums
+  {:Schemas
+   {:values
+    [{:enum-value "Types"}
+     {:enum-value "Inputs"}
+     {:enum-value "Interfaces"}
+     {:enum-value "Unions"}
+     {:enum-value "Enums"}],
+    :description "Example of enum"},
+   :RandomUserGender
+   {:values
+    [{:enum-value "male", :description "Masculino"}
+     {:enum-value "female", :description "Feminino"}]}}},
  :config
- {:name "bff-squared",
-  :description "Um framework para construção de BFFs"}
-
+ {:name "BFF Squared",
+  :description "Uma ferramenta de low code para construção de BFFs",
+  :env :dev},
  :sources
  {:GetAdviceSlipById
-  {:method :get,
-   :uri "https://api.adviceslip.com/advice/:adviceId"}
+  {:method :get, :uri "https://api.adviceslip.com/advice/:adviceId"},
   :GetRandomAdvice
-  {:method :get,
-   :uri "https://api.adviceslip.com/advice"}
+  {:method :get, :uri "https://api.adviceslip.com/advice"},
   :SearchAdvices
   {:method :get,
-   :uri "https://api.adviceslip.com/advice/search/:query"}
+   :uri "https://api.adviceslip.com/advice/search/:query"},
   :GitHubRepos
-  {:method :get
-   :uri "https://api.github.com/users/:userId/repos"}}}
+  {:method :get, :uri "https://api.github.com/users/:username/repos"},
+  :GET_RandomUsers {:uri "https://randomuser.me/api", :method :get}}}

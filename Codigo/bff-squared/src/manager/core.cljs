@@ -1,12 +1,29 @@
 (ns manager.core
   (:require [reagent.dom :as rdom]
-            [re-frame.core :as rf] 
+            [re-frame.core :as rf]
             [manager.navigation]
             [manager.controller]
             [manager.routes :as routes]
             [manager.views.page :as views.page]))
 
-(rf/reg-event-db :initialize-db (constantly {}))
+(rf/reg-event-db
+ :initialize-db
+ (constantly
+  {:panel->path
+   {:schemas_types [:graphql :objects]
+    :schemas_inputs [:graphql :input-objects]
+    :schemas_interfaces [:graphql :interfaces]
+    :schemas_unions [:graphql :unions]
+    :schemas_enums [:graphql :enums]
+    :apis  [:sources]
+    :queries [:graphql :queries]
+    :mutations [:graphql :mutations]
+    :settings  [:config]}
+   :names
+   {:env ["dev" "staging" "prod"]
+    :scalar  ["String" "Int" "Long" "Boolean" "ID"]
+    :request ["body" "headers" "params"]
+    :methods ["GET" "POST" "PATCH" "PUT" "DELETE"]}}))
 
 (def debug?
   ^boolean goog.DEBUG)
