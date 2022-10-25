@@ -40,4 +40,5 @@
             (get-in fixtures/definition-map [:sources :GetAdviceSlipById])
             {:headers {:Authorization "Bearer xxxx"}
              :body {:item "Test Request" :completed false}
-             :params {:adviceId 37 :order "desc"}}))))))
+             :params {:adviceId 37 :order "desc"}}
+            nil))))))

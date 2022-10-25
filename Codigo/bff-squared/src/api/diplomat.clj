@@ -16,12 +16,14 @@
      (or (apply dissoc params route-params) {})]))
 
 (defn make-request
-  [{:keys [uri method]} {:keys [params headers body]}]
+  [{:keys [uri method]} {:keys [params headers body]} response-path]
   (let [[url query-params] (url+query-params uri params)]
-    (client/request {:method method
-                     :url url
-                     :query-params query-params
-                     :headers headers
-                     :body body
-                     :as :json
-                     :throw-exceptions false})))
+    (cond-> (client/request {:method method
+                             :url url
+                             :query-params query-params
+                             :headers headers
+                             :body body
+                             :as :json
+                             :throw-exceptions false})
+      (not-empty response-path) 
+      (get-in response-path))))
