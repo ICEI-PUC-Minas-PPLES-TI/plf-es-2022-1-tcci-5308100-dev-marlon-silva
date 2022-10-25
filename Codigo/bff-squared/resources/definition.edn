@@ -1,6 +1,8 @@
 {:graphql
  {:objects
-  {:ReposResponseSuccess
+  {:CPF_response
+   {:fields {:body {:type :CPF_body}, :status {:type :Int}}},
+   :ReposResponseSuccess
    {:fields
     {:status {:type :Int},
      :body {:type (list :Repo)},
@@ -10,6 +12,7 @@
    {:description "Advice Slip",
     :fields
     {:advice {:type (non-null :String)}, :id {:type (non-null :Int)}}},
+   :CPF_body {:fields {:data {:type (list :String)}}},
    :Link {:fields {:href {:type :String}}},
    :RandomUsersResponse
    {:fields {:body {:type :RandomUsersBody}, :status {:type :Int}}},
@@ -52,7 +55,9 @@
     {:email {:type :String},
      :phone {:type :String},
      :gender {:type :RandomUserGender},
-     :name {:type :RandomUserName}}},
+     :name {:type :RandomUserName},
+     :cpf
+     {:type :String, :resolve [:get-in :GetRandomCPF [:body :data 0]]}}},
    :AdviceBody
    {:implements [:AdviceSuccess :AdviceError],
     :fields
@@ -93,18 +98,19 @@
    :searchAdvice
    {:type :AdvicesResponse,
     :description "Search advices by text",
-    :resolve :SearchAdvices,
+    :resolve :GetSearchAdvices,
     :args {:params {:type :SearchAdviceParams}}},
-   :getUserRepos
+   :userRepos
    {:type :ReposResponseSuccess,
-    :resolve :GitHubRepos,
+    :resolve :GetGitHubRepos,
     :args
     {:params {:type :UserReposParams},
      :headers {:type :UserReposHeaders}}},
-   :GetRandomUsers
-   {:resolve :GET_RandomUsers,
+   :randomUsers
+   {:resolve :GetRandomUsers,
     :type :RandomUsersResponse,
-    :args {:params {:type :RandomUsersParams}}}},
+    :args {:params {:type :RandomUsersParams}}},
+   :randomCPF {:type :CPF_response, :resolve :GetRandomCPF}},
   :enums
   {:Schemas
    {:values
@@ -127,9 +133,10 @@
   {:method :get, :uri "https://api.adviceslip.com/advice/:adviceId"},
   :GetRandomAdvice
   {:method :get, :uri "https://api.adviceslip.com/advice"},
-  :SearchAdvices
+  :GetRandomCPF {:method :get, :uri "https://2devs.com.br/v1/cpf"},
+  :GetSearchAdvices
   {:method :get,
    :uri "https://api.adviceslip.com/advice/search/:query"},
-  :GitHubRepos
+  :GetGitHubRepos
   {:method :get, :uri "https://api.github.com/users/:username/repos"},
-  :GET_RandomUsers {:uri "https://randomuser.me/api", :method :get}}}
+  :GetRandomUsers {:uri "https://randomuser.me/api", :method :get}}}

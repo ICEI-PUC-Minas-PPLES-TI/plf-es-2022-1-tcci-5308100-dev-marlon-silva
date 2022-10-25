@@ -64,8 +64,8 @@
 
   (testing "Used resource"
     (is (thrown-with-msg? js/Error
-                          #"This resource is still used by others."
+                          #"There is a dependency for this resource."
                           (s/dissoc-definition fixtures/definition-map [:graphql :interfaces] :Human)))
     (is (thrown-with-msg? js/Error
-                          #"This resource is still used by others."
+                          #"There is a dependency for this resource."
                           (s/dissoc-definition fixtures/definition-map [:graphql :objects] :Project)))))

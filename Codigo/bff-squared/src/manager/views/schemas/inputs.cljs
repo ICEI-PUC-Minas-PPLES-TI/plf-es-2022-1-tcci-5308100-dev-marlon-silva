@@ -11,7 +11,7 @@
    [form/composite-select-input :type "Type:" [:scalar :inputs :enums] path
     ^{:key :list} [form/checkbox :type "List" "list" path]
     ^{:key :non-null} [form/checkbox :type "Required" "non-null" path]]
-   [form/text-input :default-value "Default value:" path]
+   [form/text-input :default-value "Default Value:" path]
    [form/text-input-with-toggle :deprecated "Deprecated:" :isDeprecated path
     ^{:key :delete}
     [:span.input-group-btn
