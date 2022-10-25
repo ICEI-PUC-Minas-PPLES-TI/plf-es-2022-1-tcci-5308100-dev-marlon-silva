@@ -50,7 +50,7 @@
     [:select.selectpicker.form-control
      {:id id
       :ref (partial select-did-mount props first-render? query-selector)
-      :title "[none selected]"
+      :title "(nothing selected)"
       :multiple multiple
       :data-live-search "true"
       :data-selected-text-format "count > 2"
@@ -60,7 +60,7 @@
      (for [[kind items] options]
        [:optgroup {:key kind :label (string/capitalize (name kind))}
         (for [item items]
-          [:option {:key item} item])])]))
+          [:option {:key item} (or item "(nothing selected)")])])]))
 
 (defn name-input [kind]
   (let [value (get @(rf/subscribe [:get-resource]) :name "")]

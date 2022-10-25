@@ -4,8 +4,8 @@
   '{:graphql
     {:objects
      {:Advice
-      :description "Advice Slip"
-      {:fields
+      {:description "Advice Slip"
+       :fields
        {:id {:type (non-null :ID)}
         :advice {:type (non-null :String)}}}}
      :input-objects
