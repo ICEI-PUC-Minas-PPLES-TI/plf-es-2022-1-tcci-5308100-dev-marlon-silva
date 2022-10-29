@@ -1,18 +1,20 @@
 (ns manager.storage
-  (:require-macros [manager.env :refer [cljs-env]])
   (:require ["express" :as express]
             ["cors" :as cors]
+            ["dotenv" :as env]
             [cljs.reader :as reader]
             [clojure.pprint :as pp]
             [clojure.walk :as w]
             [manager.utils :as u]))
+
+(.config env)
 
 (def fs (js/require "fs"))
 
 (defonce server (atom nil))
 (defonce definition (atom nil))
 
-(def definition-path (cljs-env :definition-path))
+(def definition-path (.. js/process -env -DEFINITION_PATH))
 
 (defn- load-callback [err data]
   (if err
@@ -92,7 +94,7 @@
   (load-definition)
   (.listen app 8180 #(println "Storage running...")))
 
-(defn start! [] 
+(defn start! []
   (reset! server (start-server)))
 
 (defn main []
