@@ -1,8 +1,7 @@
-(defproject bff-squared "0.1.0-SNAPSHOT"
-  :description "Um framework para construção de BFFs"
+(defproject bff-squared "1.0"
+  :description "Aplicação BFF com GraphQL definida por especificações"
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [com.walmartlabs/lacinia-pedestal "1.1"]
-                 [com.stuartsierra/component "1.1.0"]
                  [io.aviso/logging "1.0"]
                  [clj-http "3.12.3"]
                  [cheshire "5.11.0"]
@@ -11,5 +10,5 @@
   :source-paths ["src"]
   :main ^:skip-aot api.server
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}
+  :profiles {:uberjar {:aot [api.server]}
              :dev {:dependencies [[nubank/matcher-combinators "3.5.1"]]}})
