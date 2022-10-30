@@ -1,0 +1,1 @@
+{"version":3,"sources":["manager/db.cljs"],"mappings":";AAEA,wBAAA,2CAAA,qDAAA,xHAAKA","names":["manager.db/default-db"],"sourcesContent":["(ns manager.db)\n\n(def default-db\n  {:name \"re-frame\"})\n"]}

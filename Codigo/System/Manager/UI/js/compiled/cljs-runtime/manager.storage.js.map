@@ -1,0 +1,1 @@
+{"version":3,"sources":["manager/storage.cljs"],"mappings":"","names":[],"sourcesContent":["(ns manager.storage\n  (:require-macros [manager.storage]))\n"]}
