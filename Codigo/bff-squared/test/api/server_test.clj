@@ -11,9 +11,9 @@
 
 (def service-tuple
   [{:objects
-    {:Advice
-     :description "Advice Slip"
-     {:fields
+    {:Advice 
+     {:description "Advice Slip"
+      :fields
       {:id {:type '(non-null :ID)}
        :advice {:type '(non-null :String)}}}}
     :input-objects

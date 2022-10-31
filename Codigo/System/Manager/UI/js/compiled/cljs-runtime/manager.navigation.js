@@ -1,0 +1,22 @@
+goog.provide('manager.navigation');
+re_frame.core.reg_event_fx.cljs$core$IFn$_invoke$arity$2(new cljs.core.Keyword(null,"redirect","redirect",-1975673286),(function (_,p__25935){
+var vec__25936 = p__25935;
+var ___$1 = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__25936,(0),null);
+var handler = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__25936,(1),null);
+return new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"navigate","navigate",657596805),handler], null);
+}));
+re_frame.core.reg_event_fx.cljs$core$IFn$_invoke$arity$2(new cljs.core.Keyword(null,"set-active-panel","set-active-panel",-965871124),(function (p__25944,p__25945){
+var map__25946 = p__25944;
+var map__25946__$1 = cljs.core.__destructure_map(map__25946);
+var db = cljs.core.get.cljs$core$IFn$_invoke$arity$2(map__25946__$1,new cljs.core.Keyword(null,"db","db",993250759));
+var vec__25947 = p__25945;
+var _ = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__25947,(0),null);
+var active_panel = cljs.core.nth.cljs$core$IFn$_invoke$arity$3(vec__25947,(1),null);
+return cljs.core.merge.cljs$core$IFn$_invoke$arity$variadic(cljs.core.prim_seq.cljs$core$IFn$_invoke$arity$2([new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"db","db",993250759),cljs.core.dissoc.cljs$core$IFn$_invoke$arity$2(cljs.core.assoc.cljs$core$IFn$_invoke$arity$3(db,new cljs.core.Keyword(null,"active-panel","active-panel",-1802545994),active_panel),new cljs.core.Keyword(null,"resource","resource",251898836))], null),((cljs.core._EQ_.cljs$core$IFn$_invoke$arity$2(active_panel,new cljs.core.Keyword(null,"settings","settings",1556144875)))?new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"async-flow","async-flow",1464712702),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"first-dispatch","first-dispatch",128561923),new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"load-all-resources","load-all-resources",1030877775)], null),new cljs.core.Keyword(null,"rules","rules",1198912366),new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.PersistentArrayMap(null, 4, [new cljs.core.Keyword(null,"when","when",-576417306),new cljs.core.Keyword(null,"seen?","seen?",-1677689856),new cljs.core.Keyword(null,"events","events",1792552201),new cljs.core.Keyword(null,"load-all-resources-success","load-all-resources-success",-103602515),new cljs.core.Keyword(null,"dispatch","dispatch",1319337009),new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"select-config","select-config",1067988917)], null),new cljs.core.Keyword(null,"halt?","halt?",-1110658247),true], null),new cljs.core.PersistentArrayMap(null, 4, [new cljs.core.Keyword(null,"when","when",-576417306),new cljs.core.Keyword(null,"seen?","seen?",-1677689856),new cljs.core.Keyword(null,"events","events",1792552201),new cljs.core.Keyword(null,"load-all-resources-failure","load-all-resources-failure",-532862434),new cljs.core.Keyword(null,"dispatch","dispatch",1319337009),cljs.core.PersistentVector.EMPTY,new cljs.core.Keyword(null,"halt?","halt?",-1110658247),true], null)], null)], null)], null):((((cljs.core._EQ_.cljs$core$IFn$_invoke$arity$2(active_panel,new cljs.core.Keyword(null,"home","home",-74557309))) || (cljs.core._EQ_.cljs$core$IFn$_invoke$arity$2(active_panel,new cljs.core.Keyword(null,"schemas","schemas",575070579)))))?null:new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"fx","fx",-1237829572),new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"dispatch","dispatch",1319337009),new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"load-all-resources","load-all-resources",1030877775)], null)], null)], null)], null)
+))], 0));
+}));
+re_frame.core.reg_sub.cljs$core$IFn$_invoke$arity$variadic(new cljs.core.Keyword(null,"get-active-panel","get-active-panel",1506046163),cljs.core.prim_seq.cljs$core$IFn$_invoke$arity$2([(function (db,_){
+return new cljs.core.Keyword(null,"active-panel","active-panel",-1802545994).cljs$core$IFn$_invoke$arity$1(db);
+})], 0));
+
+//# sourceMappingURL=manager.navigation.js.map

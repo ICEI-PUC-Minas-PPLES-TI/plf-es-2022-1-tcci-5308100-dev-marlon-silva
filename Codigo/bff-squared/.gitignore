@@ -1,0 +1,32 @@
+/target
+/classes
+/checkouts
+profiles.clj
+pom.xml
+pom.xml.asc
+*.jar
+*.class
+.hgignore
+.hg/
+.clj-kondo/
+.lsp/
+.calva/
+
+/out/
+/resources/public/js/compiled/
+/*-init.clj
+/*.log
+
+# Leiningen
+/.nrepl-port
+.lein-failures
+
+# Node.js dependencies
+/node_modules/
+package-lock.json
+
+# shadow-cljs cache, port files
+/.shadow-cljs/
+
+# clj-kondo cache
+/.clj-kondo/.cache

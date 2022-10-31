@@ -117,7 +117,8 @@
             [])))))
 
 (def db-default-names
-  {:env ["dev" "staging" "prod"]
+  {:default [nil]
+   :env ["dev" "staging" "prod"]
    :scalar  ["String" "Int" "Long" "Boolean" "ID"]
    :request ["body" "headers" "params"]
    :methods ["GET" "POST" "PATCH" "PUT" "DELETE"]})

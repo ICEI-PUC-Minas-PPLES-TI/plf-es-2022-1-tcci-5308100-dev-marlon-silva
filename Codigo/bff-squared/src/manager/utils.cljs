@@ -4,6 +4,8 @@
             [manager.validations :as v]
             [clojure.string :as s]))
 
+(defn- maybe-parse-int [val] (if (int? (js/parseInt val)) (js/parseInt val) val))
+
 (defn- format-type [type]
   (let [type (if (vector? type) type [type])]
     (reduce #(list %2 %1) (keyword (last type)) (mapv symbol (reverse (butlast type))))))
@@ -15,7 +17,10 @@
     ((comp vector? :members) m) (update :members (partial mapv keyword))
     ((comp string? :env) m) (update :env keyword)
     ((comp string? :method) m) (update :method keyword)
-    ((comp string? :resolve) m) (update :resolve keyword)))
+    ((comp string? :resolve) m) (update :resolve keyword)
+    ((comp vector? :resolve) m) (-> (update-in [:resolve 0] keyword)
+                                    (update-in [:resolve 1] keyword)
+                                    (update-in [:resolve 2] (partial mapv #(if-not (int? %) (keyword %) %))))))
 
 (defn ->edn [data]
   (w/postwalk #(if (map? %) (maybe-format-values %) %) data))
@@ -26,10 +31,10 @@
        (some k)
        (nil?)))
 
-(defn referenced? [m v]
+(defn referenced? [m val]
   (->> (tree-seq map? vals m)
        (filter map?)
-       (some #(contains? (set (flatten (vals %))) v))))
+       (some #(contains? (set (flatten (vals %))) val))))
 
 (defn active-panel? [active-panel panel]
   (when (s/includes? (name active-panel) (name panel)) :active))
@@ -45,10 +50,17 @@
 (defn drop-nth [coll n]
   (vec (keep-indexed #(when (not= %1 n) %2) coll)))
 
+(defn- field-resolve->internal [m]
+  (-> m
+      (assoc :response-path (s/join " > " (get-in m [:resolve 2])))
+      (assoc :source (get-in m [:resolve 1]))
+      (dissoc :resolve)))
+
 (defn- maybe-format-resource [m]
   (cond-> m
     ((comp #(or (string? %) (vector? %)) :type) m) (update :type #(-> % vector flatten set))
     ((comp vector? :cors) m) (update :cors (partial s/join ", "))
+    ((comp vector? :resolve) m) (field-resolve->internal)
     ((comp string? :method) m) (update :method s/upper-case)))
 
 (defn wire->internal [m]
@@ -60,11 +72,17 @@
         t2-weight (get order t2 3)]
     (compare t1-weight t2-weight)))
 
+(defn- field-resolve->wire [m]
+  (let [response-path (->> (s/split (:response-path m) #">") (mapv (comp maybe-parse-int s/trim)))]
+    (-> (assoc m :resolve [:get-in (:source m) response-path])
+        (dissoc :source :response-path))))
+
 (defn- maybe-prepare-json [m]
   (cond-> m
     ((comp set? :type) m) (update :type #(->> (vec %) (sort sort-types-comparator)))
     ((comp empty? :implements) m) (dissoc :implements)
     ((comp some? :isDeprecated) m) (dissoc :isDeprecated)
+    ((comp string? :response-path) m) (field-resolve->wire)
     ((comp s/blank? :cors) m) (dissoc :cors)
     ((comp not s/blank? :cors) m) (update :cors #(map s/trim (s/split % #",")))
     ((comp string? :method) m) (update :method s/lower-case)))

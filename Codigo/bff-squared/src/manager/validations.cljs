@@ -25,6 +25,8 @@
              (required-key :fields)
              (non-empty {schema/Keyword {(optional-key :description) schema/Str
                                          (required-key :type) (valid-type #{schema/Str})
+                                         (optional-key :source) schema/Str
+                                         (optional-key :response-path) schema/Str
                                          (optional-key :isDeprecated) schema/Bool
                                          (optional-key :deprecated) schema/Str}})}))
 

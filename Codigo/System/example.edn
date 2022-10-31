@@ -1,0 +1,143 @@
+{:graphql
+ {:objects
+  {:CPF_response
+   {:fields {:body {:type :CPF_body}, :status {:type :Int}}},
+   :ReposResponseSuccess
+   {:fields
+    {:status {:type :Int},
+     :body {:type (list :Repo)},
+     :headers {:type :ReposResponseHeaders},
+     :links {:type :Pagination}}},
+   :AdviceSlip
+   {:description "Advice Slip",
+    :fields
+    {:advice {:type (non-null :String)}, :id {:type (non-null :Int)}}},
+   :CPF_body {:fields {:data {:type (list :String)}}},
+   :Link {:fields {:href {:type :String}}},
+   :RandomUsersResponse
+   {:fields {:body {:type :RandomUsersBody}, :status {:type :Int}}},
+   :AdviceMessage
+   {:fields
+    {:type {:type :String, :description "error type"},
+     :text {:type :String}}},
+   :ReposResponseHeaders
+   {:fields {:date {:type :String}, :etag {:type :String}}},
+   :RandomUsersBody {:fields {:results {:type (list :RandomUser)}}},
+   :ReposResponseBodyError
+   {:fields
+    {:message {:type :String}, :documentation_url {:type :String}}},
+   :AdviceSlipWithDate
+   {:fields
+    {:id {:type (non-null :Int)},
+     :advice {:type (non-null :String)},
+     :date {:type (non-null :String)}}},
+   :ReposResponseError
+   {:fields
+    {:status {:type :Int},
+     :body {:type :ReposResponseBodyError},
+     :headers {:type :ReposResponseHeaders}}},
+   :Pagination {:fields {:prev {:type :Link}, :next {:type :Link}}},
+   :AdvicesBody
+   {:implements [:AdviceError],
+    :fields
+    {:total_results {:type :String},
+     :query {:type :String},
+     :slips {:type (list :AdviceSlipWithDate)},
+     :message {:type :AdviceMessage}}},
+   :OneAdviceResponse
+   {:fields {:status {:type :Int}, :body {:type :AdviceBody}}},
+   :AdvicesResponse
+   {:fields {:status {:type :Int}, :body {:type :AdvicesBody}}},
+   :RandomUserName
+   {:fields {:last {:type :String}, :first {:type :String}}},
+   :RandomUser
+   {:fields
+    {:email {:type :String},
+     :phone {:type :String},
+     :gender {:type :RandomUserGender},
+     :name {:type :RandomUserName},
+     :cpf
+     {:type :String,
+      :resolve [:get-in :GetRandomCPF [:body :data 0]]}}},
+   :AdviceBody
+   {:implements [:AdviceSuccess :AdviceError],
+    :fields
+    {:slip {:type :AdviceSlip}, :message {:type :AdviceMessage}}},
+   :Repo
+   {:fields
+    {:id {:type :Int},
+     :name {:type :String},
+     :url {:type :String},
+     :description {:type :String}}}},
+  :interfaces
+  {:AdviceSuccess {:fields {:slip {:type :AdviceSlip}}},
+   :AdviceError {:fields {:message {:type :AdviceMessage}}},
+   :GenericSuccess {:fields {:ok {:type :Boolean}}},
+   :GenericError {:fields {:message {:type :String}}}},
+  :unions {},
+  :input-objects
+  {:GetAdviceParams {:fields {:adviceId {:type (non-null :ID)}}},
+   :SearchAdviceParams {:fields {:query {:type :String}}},
+   :UserReposParams
+   {:fields
+    {:username {:type (non-null :String)},
+     :page {:type :String},
+     :per_page {:type :String, :default-value "3"}}},
+   :UserReposHeaders {:fields {:Authorization {:type :String}}},
+   :RandomUsersParams
+   {:fields {:results {:type :String, :default-value "4"}}}},
+  :queries
+  {:adviceById
+   {:type :OneAdviceResponse,
+    :description "Get an advice slip by ID",
+    :resolve :GetAdviceSlipById,
+    :args {:params {:type :GetAdviceParams}}},
+   :randomAdvice
+   {:type :OneAdviceResponse,
+    :description "Get a random advice slip",
+    :resolve :GetRandomAdvice},
+   :searchAdvice
+   {:type :AdvicesResponse,
+    :description "Search advices by text",
+    :resolve :GetSearchAdvices,
+    :args {:params {:type :SearchAdviceParams}}},
+   :userRepos
+   {:type :ReposResponseSuccess,
+    :resolve :GetGitHubRepos,
+    :args
+    {:params {:type :UserReposParams},
+     :headers {:type :UserReposHeaders}}},
+   :randomUsers
+   {:resolve :GetRandomUsers,
+    :type :RandomUsersResponse,
+    :args {:params {:type :RandomUsersParams}}},
+   :randomCPF {:type :CPF_response, :resolve :GetRandomCPF}},
+  :enums
+  {:Schemas
+   {:values
+    [{:enum-value "Types"}
+     {:enum-value "Inputs"}
+     {:enum-value "Interfaces"}
+     {:enum-value "Unions"}
+     {:enum-value "Enums"}],
+    :description "Example of enum"},
+   :RandomUserGender
+   {:values
+    [{:enum-value "male", :description "Masculino"}
+     {:enum-value "female", :description "Feminino"}]}}},
+ :config
+ {:name "BFF Squared",
+  :description "Uma ferramenta de low code para construção de BFFs",
+  :env :dev},
+ :sources
+ {:GetAdviceSlipById
+  {:method :get, :uri "https://api.adviceslip.com/advice/:adviceId"},
+  :GetRandomAdvice
+  {:method :get, :uri "https://api.adviceslip.com/advice"},
+  :GetRandomCPF {:method :get, :uri "https://2devs.com.br/v1/cpf"},
+  :GetSearchAdvices
+  {:method :get,
+   :uri "https://api.adviceslip.com/advice/search/:query"},
+  :GetGitHubRepos
+  {:method :get, :uri "https://api.github.com/users/:username/repos"},
+  :GetRandomUsers {:uri "https://randomuser.me/api", :method :get}}}

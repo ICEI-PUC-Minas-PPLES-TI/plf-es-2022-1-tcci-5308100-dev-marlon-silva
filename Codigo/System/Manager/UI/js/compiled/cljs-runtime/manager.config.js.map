@@ -1,0 +1,1 @@
+{"version":3,"sources":["manager/config.cljs"],"mappings":";AAEA,AAAKA,8BACMC","names":["manager.config/debug?","js/goog.DEBUG"],"sourcesContent":["(ns manager.config)\n\n(def debug?\n  ^boolean goog.DEBUG)\n"]}

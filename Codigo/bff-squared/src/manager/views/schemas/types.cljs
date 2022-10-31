@@ -11,6 +11,8 @@
    [form/composite-select-input :type "Type:" [:scalar :types :enums] path
     ^{:key :list} [form/checkbox :type "List" "list" path]
     ^{:key :non-null} [form/checkbox :type "Required" "non-null" path]]
+   [form/single-select-input :source "Extra Source:" [:default :sources] path]
+   [form/text-input :response-path "↪ Response Path:" path]
    [form/text-input-with-toggle :deprecated "Deprecated:" :isDeprecated path
     ^{:key :delete}
     [:span.input-group-btn

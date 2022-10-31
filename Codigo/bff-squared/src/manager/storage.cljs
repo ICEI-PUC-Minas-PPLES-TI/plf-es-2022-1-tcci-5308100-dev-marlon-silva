@@ -1,18 +1,20 @@
 (ns manager.storage
-  (:require-macros [manager.env :refer [cljs-env]])
   (:require ["express" :as express]
             ["cors" :as cors]
+            ["dotenv" :as env]
             [cljs.reader :as reader]
             [clojure.pprint :as pp]
             [clojure.walk :as w]
             [manager.utils :as u]))
+
+(.config env)
 
 (def fs (js/require "fs"))
 
 (defonce server (atom nil))
 (defonce definition (atom nil))
 
-(def definition-path (cljs-env :definition-path))
+(def definition-path (.. js/process -env -DEFINITION_PATH))
 
 (defn- load-callback [err data]
   (if err
@@ -49,7 +51,7 @@
   [current-definition path name]
   (if-not (u/referenced? current-definition name)
     (update-in current-definition path dissoc name)
-    (throw (js/Error. "This resource is still used by others."))))
+    (throw (js/Error. "There is a dependency for this resource."))))
 
 (defn- update-definition! [new-definition]
   (reset! definition new-definition)
@@ -60,7 +62,7 @@
         path (mapv keyword (:path body))]
     (try
       (update-definition! (assoc-definition @definition path body))
-      (-> res (.status 200) (.json #js{:message "Definition updated."}))
+      (-> res (.status 200) (.json #js{:message "Definition updated (Write)."}))
       (catch js/Error e
         (-> res (.status 400) (.json #js{:message (.-message e)}))))))
 
@@ -70,7 +72,7 @@
         name (keyword (:name body))]
     (try
       (update-definition! (dissoc-definition @definition path name))
-      (-> res (.status 200) (.json #js{:message "Definition updated."}))
+      (-> res (.status 200) (.json #js{:message "Definition updated (Delete)."}))
       (catch js/Error e
         (-> res (.status 400) (.json #js{:message (.-message e)}))))))
 
@@ -90,17 +92,10 @@
 (defn start-server []
   (println "Loading definition...")
   (load-definition)
-  (.listen app 8180 #(println "Storage running on port 8180...")))
+  (.listen app 8180 #(println "Storage running...")))
 
 (defn start! []
-  ;; called by main and after reloading code
   (reset! server (start-server)))
 
-(defn stop! []
-  ;; called before reloading code
-  (.close @server)
-  (reset! server nil))
-
 (defn main []
-  ;; executed once, on startup, can do one time setup here
   (start!))
