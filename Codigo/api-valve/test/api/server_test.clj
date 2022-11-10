@@ -27,8 +27,8 @@
       :resolve fn?
       :args
       {:params {:type :adviceParams}}}}}
-   {:name "bff-squared"
-    :description "Um framework para construção de BFFs"}])
+   {:name "api-valve"
+    :description "Uma ferramenta low code para construção de BFFs"}])
 
 (deftest create-service-test
   (with-redefs [lp/default-interceptors (constantly nil)
