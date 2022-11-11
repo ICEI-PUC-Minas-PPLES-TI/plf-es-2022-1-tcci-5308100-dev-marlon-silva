@@ -1,3 +1,6 @@
 # Código do Projeto
 
-Mantenha neste diretório todo o código do projeto. Se necessário, descreva neste arquivo aspectos relevantes da estrutura de diretórios criada para organização do código.
+Este diretório mantém o código do sistema desenvolvido. Ele está organizado da seguinte forma:
+
+- `/api-valve`: Código fonte do sistema.
+- `/System`: Executáveis para utilização da ferramenta.
