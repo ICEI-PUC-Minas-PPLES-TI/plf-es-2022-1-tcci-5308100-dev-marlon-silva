@@ -54,12 +54,12 @@ npm start
 
 Após configurar a variável de ambiente (apontando para um arquivo válido) e baixar as dependências, basta executar a aplicação. Feito isso, será possível acessá-la em um navegador pelo endereço `http://localhost:3000`, onde será carregada a seguinte tela:
 
-[imagem settings]
+![image](https://user-images.githubusercontent.com/38755766/201502724-0d333d94-35c0-46d3-819b-26693cb06f8a.png)
 > Aba de gerenciamento das configurações do servidor.
 
 Os dados contidos no arquivo EDN serão carregados nessa interface de usuário e podem ser manipulados ao navegar pelas abas do sistema, selecionar elementos das listas à esquerda e editá-los pelos formulários à direita. 
 
-[imagem schema types]
+![image](https://user-images.githubusercontent.com/38755766/201502697-9bca4da3-ac45-404b-88cf-905d16128d63.png)
 > Aba de gerenciamento de _schemas_ (_types_).
 
 É possível criar um novo elemento, clicando no botão `Create New` ou selecionar um elemento da lista (se houver), clicando nele.
@@ -71,7 +71,7 @@ Os dados contidos no arquivo EDN serão carregados nessa interface de usuário e
 
 Após configurar a variável de ambiente (apontando para um arquivo válido), basta executar a aplicação. Feito isso, a aplicação irá carregar o arquivo EDN e validar o formato das especificações (se houver). Qualquer inconsistência com as especificações causará um erro de execução e exibirá uma explicação do problema no terminal, interrompendo a execução da aplicação. Caso contrário, se não houver nenhum erro das especificações, será possível acessar a interface do GraphiQL em um navegador pelo endereço `http://localhost:8080/graphiql`, onde será carregada uma interface semelhante à apresentada a seguir:
 
-[imagem graphiql]
+![image](https://user-images.githubusercontent.com/38755766/201502817-4e4a1624-1c2c-46f1-ab60-6874dcbb6cc7.png)
 > Interface de documentação e exploração da API GraphQL.
 
 Para realizar requisições para a API em execução, basta utilizar o endereço `http://localhost:8080/api`, enviando uma consulta no formato do GraphQL no corpo de uma requisição com o método `POST`.
