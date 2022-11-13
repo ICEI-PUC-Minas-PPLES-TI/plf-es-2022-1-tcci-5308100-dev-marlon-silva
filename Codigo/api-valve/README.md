@@ -20,7 +20,7 @@ lein deps
 lein test
 ```
 
-- Executar aplicação.
+- Executar a aplicação.
 
 ```
 lein run
@@ -40,7 +40,7 @@ npm install
 npm test
 ```
 
-- Executar aplicação.
+- Executar a aplicação.
 
 ```
 npm start

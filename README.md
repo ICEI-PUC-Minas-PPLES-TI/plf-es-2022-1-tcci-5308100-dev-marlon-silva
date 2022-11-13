@@ -12,9 +12,7 @@ Automatizar a construção de aplicações _Back-end for Front-end_ (BFF) utiliz
 * Marco Rodrigo Costa - Orientador de Conteúdo (TCC I)
 * José Laerte Xavier - Professor-Orientador (TCC II)
 
-## Índice de conteúdo
+## Links úteis
 
 - [Documentação do projeto](https://github.com/ICEI-PUC-Minas-PPLES-TI/plf-es-2022-1-tcci-5308100-dev-marlon-silva/tree/master/Documentacao)
-- [Artefatos de documentação do projeto](https://github.com/ICEI-PUC-Minas-PPLES-TI/plf-es-2022-1-tcci-5308100-dev-marlon-silva/tree/master/Artefatos)
-- [Código fonte do projeto](https://github.com/ICEI-PUC-Minas-PPLES-TI/plf-es-2022-1-tcci-5308100-dev-marlon-silva/tree/master/Codigo/bff-squared)
-  - [Executáveis e manual de uso da ferramenta](https://github.com/ICEI-PUC-Minas-PPLES-TI/plf-es-2022-1-tcci-5308100-dev-marlon-silva/tree/master/Codigo/System)
+- [Executáveis e manual de uso da ferramenta](https://github.com/ICEI-PUC-Minas-PPLES-TI/plf-es-2022-1-tcci-5308100-dev-marlon-silva/tree/master/Codigo/System)
