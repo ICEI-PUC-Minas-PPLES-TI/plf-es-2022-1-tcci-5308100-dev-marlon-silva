@@ -25,8 +25,8 @@
        :description "Say helloooou",
        :resolve :hello-resolve}}},
     :config
-    {:name "bff-squared",
-     :description "Um framework para construção de BFFs"},
+    {:name "api-valve",
+     :description "Uma ferramenta low code para construção de BFFs"},
     :sources
     {:github {:uri "https://github.com",
               :method :get}}})

@@ -18,8 +18,8 @@
   [rc/box :src (at)
    :justify :center
    :style {:height "12vh" :padding "0vh 1em 0vh 1em"
-           :margin-top "-2vh" :background-color "#f4f4f4"}
-   :child [:h2 "BFF Squared" [:small "Manager"]]])
+           :margin-top "-2vh" :background-color "#77777709"}
+   :child [:img {:src "/logo.png" :style {:margin-top "1vh"} :width "150vh"}]])
 
 (defn- navbar-tab [active-panel panel label]
   [:li
@@ -30,7 +30,7 @@
 (defn navbar [active-panel]
   [:ul
    {:class "nav nav-tabs nav-justified"
-    :style {:background-color "#f4f4f4"}}
+    :style {:background-color "#77777709"}}
    [navbar-tab active-panel :schemas "Schemas"]
    [navbar-tab active-panel :apis "APIs"]
    [navbar-tab active-panel :queries "Queries"]

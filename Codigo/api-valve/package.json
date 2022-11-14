@@ -1,5 +1,5 @@
 {
-	"name": "bff-squared",
+	"name": "api-valve",
 	"scripts": {
 		"ancient": "clojure -Sdeps '{:deps {com.github.liquidz/antq {:mvn/version \"RELEASE\"}}}' -m antq.core",
 		"server": "npx shadow-cljs release storage && node target/storage.js",

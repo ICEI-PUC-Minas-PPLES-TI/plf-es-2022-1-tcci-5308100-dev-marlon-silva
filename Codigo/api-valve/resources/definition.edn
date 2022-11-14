@@ -125,8 +125,8 @@
     [{:enum-value "male", :description "Masculino"}
      {:enum-value "female", :description "Feminino"}]}}},
  :config
- {:name "BFF Squared",
-  :description "Uma ferramenta de low code para construção de BFFs",
+ {:name "API Valve",
+  :description "Uma ferramenta low code para construção de BFFs",
   :env :dev},
  :sources
  {:GetAdviceSlipById

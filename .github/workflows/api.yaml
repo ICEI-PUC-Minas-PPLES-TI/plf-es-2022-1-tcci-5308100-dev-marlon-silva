@@ -11,7 +11,7 @@ jobs:
   tests:
     defaults:
       run:
-        working-directory: Codigo/bff-squared
+        working-directory: Codigo/api-valve
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]

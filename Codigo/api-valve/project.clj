@@ -1,5 +1,5 @@
-(defproject bff-squared "1.0"
-  :description "Aplicação BFF com GraphQL definida por especificações"
+(defproject api-valve "1.0"
+  :description "Aplicação BFF definida por especificações"
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [com.walmartlabs/lacinia-pedestal "1.1"]
                  [io.aviso/logging "1.0"]

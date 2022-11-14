@@ -1,6 +1,6 @@
 cff-version: 1.0.1
 message: Please cite this software using these metadata.
-title: BFF Squared - um framework para construção de BFFs
+title: API Valve
 authors:
   - family-names: Silva
     given-names: Marlon Henrique
@@ -19,6 +19,7 @@ authors:
 keywords:
   - Back-end for Front-end
   - GraphQL
+  - Low Code
 repository-code: https://github.com/ICEI-PUC-Minas-PPLES-TI/plf-es-2022-1-tcci-5308100-dev-marlon-silva
 license: CC-BY-4.0
 version: 1.0.0

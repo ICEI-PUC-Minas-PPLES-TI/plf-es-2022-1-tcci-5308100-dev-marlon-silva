@@ -1,6 +1,6 @@
 goog.provide('manager.views');
 manager.views.home_title = (function manager$views$home_title(){
-var name = "BFF Squared";
+var name = "API Valve";
 return new cljs.core.PersistentVector(null, 7, 5, cljs.core.PersistentVector.EMPTY_NODE, [re_com.core.title,new cljs.core.Keyword(null,"src","src",-1651076051),(((!(goog.DEBUG)))?null:new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"file","file",-1269645878),"manager/views.cljs",new cljs.core.Keyword(null,"line","line",212345235),11], null)),new cljs.core.Keyword(null,"label","label",1718410804),["Hello from ",name,". This is the Home Page."].join(''),new cljs.core.Keyword(null,"level","level",1290497552),new cljs.core.Keyword(null,"level1","level1",813811133)], null);
 });
 manager.views.link_to_about_page = (function manager$views$link_to_about_page(){
